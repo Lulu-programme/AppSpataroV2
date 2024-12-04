@@ -34,7 +34,7 @@ class Account(AbstractUser):
     card_drive = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     phone = models.CharField(max_length=50, null=True, blank=True)
     city = models.CharField(max_length=50, null=True, blank=True)
-    sector = models.CharField(choices=SECTOR_CHOICES, max_length=50)
+    sector = models.CharField(choices=SECTOR_CHOICES, max_length=50, default='')
     delete = models.BooleanField(default=False)
     
     def __str__(self):
