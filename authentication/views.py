@@ -3,6 +3,7 @@ from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required
 from .models import Truck, Account
 from datetime import datetime
+from deep_translator import GoogleTranslator
 
 
 @login_required
@@ -64,9 +65,60 @@ def add_truck(request):
             return redirect('profil')
         except ValueError as e:
             # Gestion des erreurs de conversion
-            context['error'] = f"Erreur lors de l'ajout du camion : {e}"
+            error = GoogleTranslator(source='auto', target='fr').translate(str(e))
+            context['error'] = f"Erreur lors de l'ajout du camion : {error}"
     
     return render(request, 'authentication/truck.html', context)
 
 def signup_page(request):
-    pass
+    context = {
+        'title': 'Ajouter un chauffeur',
+        'trucks': Truck.objects.all(),
+    }
+    if request.method == 'POST':
+        if request.POST['password1'] == request.POST['password2']:
+            try:
+                username = request.POST.get('username')
+                password = request.POST.get('password1')
+                first_name = request.POST.get('first_name').capitalize()
+                last_name = request.POST.get('last_name').capitalize()
+                sector = request.POST.get('sector')
+                truck = request.POST.get('truck')
+                drive_license = request.POST.get('drive_license')
+                adr_license = request.POST.get('adr_license')
+                card_drive = request.POST.get('card_drive')
+                email = request.POST.get('email')
+                phone = request.POST.get('phone')
+                city = request.POST.get('city').capitalize()
+                is_staff = request.POST.get('is_staff')
+
+                # Conversion des dates
+                drive_license_date = datetime.strptime(drive_license, '%Y-%m-%d') if drive_license else None
+                adr_license_date = datetime.strptime(adr_license, '%Y-%m-%d') if adr_license else None
+                card_drive_date = datetime.strptime(card_drive, '%Y-%m-%d') if card_drive else None
+
+                # Création du camion
+                Account.objects.create_user(
+                    username=username,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    sector=sector,
+                    truck=Truck.objects.get(id=truck),
+                    drive_license=drive_license_date,
+                    adr_license=adr_license_date,
+                    card_drive=card_drive_date,
+                    email=email,
+                    phone=phone,
+                    city=city,
+                    is_staff=True if is_staff else False,
+                )
+                return redirect('profil')
+            except ValueError as e:
+                # Gestion des erreurs de conversion
+                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
+                context['error'] = f"Erreur lors de l'ajout du chauffeur : {error}"
+        else:
+            context['error'] = 'les mots de passe ne correspondent pas'
+    
+    return render(request, 'authentication/signup.html', context)

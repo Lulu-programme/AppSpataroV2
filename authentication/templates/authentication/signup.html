@@ -7,28 +7,83 @@
 <form action="{% url 'signup' %}" method="POST">
     {% csrf_token %}
     <fieldset>
-        <legend>Immatriculation</legend>
-        <input type='text' name='license' id='license' required>
+        <legend>Nom utilisateur</legend>
+        <input type='text' name='username' id='username' required>
     </fieldset>
     <fieldset>
-        <legend>Contrôle technique</legend>
-        <input type='date' name='technical' id='technical'>
+        <legend>Mot de passe</legend>
+        <input type='password' name='password1' id='password1' required>
     </fieldset>
     <fieldset>
-        <legend>Contrôle tachygraphe</legend>
-        <input type='date' name='tachographe' id='tachographe'>
+        <legend>Confirmer mot de passe</legend>
+        <input type='password' name='password2' id='password2' required>
     </fieldset>
     <fieldset>
-        <legend>Contrôle ADR</legend>
-        <input type='date' name='adr' id='adr'>
+        <legend>Prénom</legend>
+        <input type='text' name='first_name' id='first_name' required>
     </fieldset>
     <fieldset>
-        <legend>Entretient</legend>
-        <input type='date' name='maintenance' id='maintenance'>
+        <legend>Nom</legend>
+        <input type='text' name='last_name' id='last_name' required>
     </fieldset>
     <fieldset>
-        <legend>Poids</legend>
-        <input type='number' name='weight' id='weight' min='0' value='0'>
+        <legend>Secteur</legend>
+        <div>
+            <input type="radio" id="sector" name="sector" value="Gaz" checked />
+            <label for="sector">Gaz</label>
+        </div>
+        <div>
+            <input type="radio" id="sector" name="sector" value="Distribution"/>
+            <label for="sector">Distribution</label>
+        </div>
+        <div>
+            <input type="radio" id="sector" name="sector" value="Chimie"/>
+            <label for="sector">Chimie</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Camion</legend>
+        {% for truck in trucks %}
+        <div>
+            <input type="radio" id="truck" name="truck" value="{{ truck.id }}"/>
+            <label for="truck">{{ truck.license }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Permis de conduire</legend>
+        <input type='date' name='drive_license' id='drive_license'>
+    </fieldset>
+    <fieldset>
+        <legend>Permis ADR</legend>
+        <input type='date' name='adr_license' id='adr_license'>
+    </fieldset>
+    <fieldset>
+        <legend>Carte chauffeur</legend>
+        <input type='date' name='card_drive' id='card_drive'>
+    </fieldset>
+    <fieldset>
+        <legend>Email</legend>
+        <input type='email' name='email' id='email'>
+    </fieldset>
+    <fieldset>
+        <legend>Téléphone</legend>
+        <input type='text' name='phone' id='phone'>
+    </fieldset>
+    <fieldset>
+        <legend>Lieux de résidence</legend>
+        <input type='text' name='city' id='city' required>
+    </fieldset>
+    <fieldset>
+        <legend>Administrateur</legend>
+        <div>
+            <input type="radio" id="is_staff" name="is_staff" value="1"/>
+            <label for="is_staff">Oui</label>
+        </div>
+        <div>
+            <input type="radio" id="is_staff" name="is_staff" value="0" checked/>
+            <label for="is_staff">Non</label>
+        </div>
     </fieldset>
     <p class="submitted"><input type="submit" value="Inscription"></p>
 </form>
