@@ -1,0 +1,42 @@
+{% load static %}
+<div class="nav">
+    <div class="navbar">
+        <div class="logo">
+            <p><img src="{% static 'images/spataro.png' %}"><span class="laptop-tablet">Transports Spataro</span></p>
+        </div>
+        <div class="name-user">
+            <p><a href="{% url 'profil' %}"><img src="{% static 'images/icons/accounts.png' %}" class="icon">
+                <span class="laptop-tablet">&nbsp;
+                    {% if request.user.is_superuser %}
+                    Fantôme As
+                    {% else %}
+                    {{ request.user.first_name }}
+                    {% endif %}
+                </span></a></p>
+        </div>
+        <div class="button">
+                <a href="{% url 'logout' %}" class="action-button"><img src="{% static 'images/icons/logout.png' %}" class="tablet-phone icon">
+                    <span class="laptop">Déconnexion</span></a>
+        </div>
+    </div>
+    <div class="links-list">
+        {% if request.user.is_staff or request.user.is_superuser %}
+            <a href="{% url "truck" %}" class="staff"><img src="{% static 'images/icons/truck.png' %}" class="icon phone">
+            <span class="laptop-tablet">Ajouter un camion</span></a>
+            <a href="{% url 'signup' %}" class="staff"><img src="{% static 'images/icons/add_user.png' %}" class="icon phone">
+            <span class="laptop-tablet">Ajouter un chauffeur</span></a>
+            <a href="#" class="staff"><img src="{% static 'images/icons/client.png' %}" class="icon phone">
+            <span class="laptop-tablet">Client</span></a>
+            <a href="#" class="staff"><img src="{% static 'images/icons/adr.png' %}" class="icon phone">
+            <span class="laptop-tablet">ADR</span></a>
+        {% endif %}
+        {% if not request.user.is_staff or request.user.is_superuser %}
+            <a href="#"><img src="{% static 'images/icons/day.png' %}" class="icon phone">
+                <span class="laptop-tablet">Journée</span></a>
+            <a href="#"><img src="{% static 'images/icons/client.png' %}" class="icon phone">
+                <span class="laptop-tablet">Clients</span></a>
+            <a href="#"><img src="{% static 'images/icons/adr.png' %}" class="icon phone">
+                <span class="laptop-tablet">ADR</span></a>
+        {% endif %}
+    </div>
+</div>

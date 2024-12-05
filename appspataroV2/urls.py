@@ -17,10 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import authentication.views
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', authentication.views.profil, name='profil'),
-    path('login/', authentication.views.LoginPage.as_view(), name='login'),
-    path('logout/', authentication.views.logout_user, name='logout_user'),
-]
+    path('login/', authentication.views.login_page, name='login'),
+    path('logout/', authentication.views.logout_user, name='logout'),
+    path('signup/', authentication.views.signup_page, name='signup'),
+    path('truck/', authentication.views.add_truck, name='truck')
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

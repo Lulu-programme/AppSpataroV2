@@ -13,10 +13,6 @@ class Truck(models.Model):
     
     def __str__(self):
         return self.license
-    
-    def save(self, *args, **kwargs):
-        self.license = self.license.upper()
-        return super().save(self, *args, **kwargs)
 
 
 class Account(AbstractUser):
@@ -39,8 +35,3 @@ class Account(AbstractUser):
     
     def __str__(self):
         return self.get_full_name()
-    
-    def save(self, *args, **kwargs):
-        self.first_name = self.first_name.capitalize()
-        self.last_name = self.last_name.capitalize()
-        return super().save(self, *args, **kwargs)

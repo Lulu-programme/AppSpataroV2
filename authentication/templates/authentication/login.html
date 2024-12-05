@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!--{% load static %}-->
+{% load static %}
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <!--<link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/nav.css' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
@@ -16,20 +16,25 @@
     <meta name="theme-color" content="#ffffff">
     <meta http-equiv="X-UA-Compatible" content="IE=7">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
 </head>
 <body>
     <div class="login">
         <h1>{{ title }}</h1>
         {% if message %}
-        <h2>{{ message }}</h2>
+        <h2 class="error">{{ message }}</h2>
         {% endif %}
         <form action="{% url 'login' %}" method="POST">
             {% csrf_token %}
-
-            {{ form.as_p }}
-
+            <fieldset>
+                <legend>Nom d'utilisateur</legend>
+                <input type='text' name='username' id='username' required>
+            </fieldset>
+            <fieldset>
+                <legend>Mot de passe</legend>
+                <input type='password' name='password' id='password' required>
+            </fieldset>
             <p class="submitted"><input type="submit" value="Connexion"></p>
         </form>
     </div>

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<!--{% load static %}-->
+{% load static %}
+{% load i18n %}
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <!--<link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/nav.css' %}">
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/favicon/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon/favicon-32x32.png' %}">
@@ -16,12 +17,12 @@
     <meta name="theme-color" content="#ffffff">
     <meta http-equiv="X-UA-Compatible" content="IE=7">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
 </head>
 <body>
+{% include 'nav.html' %}
 <div class="container">
-    <h1>App Spataro V2</h1>
     {% block content %}
     {% endblock %}
 </div>

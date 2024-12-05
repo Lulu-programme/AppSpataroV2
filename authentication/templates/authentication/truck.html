@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ title }}</h1>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'truck' %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Immatriculation</legend>
+        <input type='text' name='license' id='license' required>
+    </fieldset>
+    <fieldset>
+        <legend>Contrôle technique</legend>
+        <input type='date' name='technical' id='technical'>
+    </fieldset>
+    <fieldset>
+        <legend>Contrôle tachygraphe</legend>
+        <input type='date' name='tachographe' id='tachographe'>
+    </fieldset>
+    <fieldset>
+        <legend>Contrôle ADR</legend>
+        <input type='date' name='adr' id='adr'>
+    </fieldset>
+    <fieldset>
+        <legend>Entretient</legend>
+        <input type='date' name='maintenance' id='maintenance'>
+    </fieldset>
+    <fieldset>
+        <legend>Poids</legend>
+        <input type='number' name='weight' id='weight' min='0' value='0'>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Inscription"></p>
+</form>
+{% endblock content %}
