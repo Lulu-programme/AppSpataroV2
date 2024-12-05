@@ -9,7 +9,9 @@ from deep_translator import GoogleTranslator
 @login_required
 def profil(request):
     context = {
-        'title': 'Tableau de bord'
+        'title': 'Tableau de bord',
+        'trucks': Truck.objects.all(),
+        'drivers': Account.objects.all(),
     }
     return render(request, 'authentication/profil.html', context)
 
@@ -104,7 +106,7 @@ def signup_page(request):
                     first_name=first_name,
                     last_name=last_name,
                     sector=sector,
-                    truck=Truck.objects.get(id=truck),
+                    truck=Truck.objects.get(id=truck) if truck else None,
                     drive_license=drive_license_date,
                     adr_license=adr_license_date,
                     card_drive=card_drive_date,

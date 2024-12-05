@@ -1,4 +1,46 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
+<h1>{{ title }}</h1>
+{% if request.user.is_staff %}
+<div class="main-tab">
+    <button class="btn-main" onclick="openMain(0)"><img src="{% static 'images/icons/folio.png' %}" class="icon phone">
+            <span class="laptop-tablet">Feuilles</span></button>
+    <button class="btn-main" onclick="openMain(1)"><img src="{% static 'images/icons/drivers.png' %}" class="icon phone">
+            <span class="laptop-tablet">Chauffeurs</span></button>
+    <button class="btn-main" onclick="openMain(2)"><img src="{% static 'images/icons/truck.png' %}" class="icon phone">
+            <span class="laptop-tablet">Camions</span></button>
+    <button class="btn-main" onclick="openMain(3)"><img src="{% static 'images/icons/graph.png' %}" class="icon phone">
+            <span class="laptop-tablet">Résumés</span></button>
+</div>
+<!-- -----   Les feuilles   ----- -->
+<div class="main-content">
+    <h2>Les feuilles</h2>
+</div>
+<!-- ------   Les chauffeurs   ----- -->
+<div class="main-content">
+    <h2>Les chauffeurs</h2>
+    <div class="content">
+        {% for driver in drivers %}
+        {% if not driver.is_superuser %}
+        <div class="card-driver">
+            <h2>{{ driver.get_full_name }}</h2>
+            <h3>{{ driver.sector }}<h3>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<!-- ------   Les camions   ----- -->
+<div class="main-content">
+    <h2>Les camions</h2>
+</div>
+<!-- ------   Les graphiques   ----- -->
+<div class="main-content">
+    <h2>Résumé</h2>
+</div>
+{% else %}
 
+{% endif %}
+<script src="{% static 'js/opentab.js' %}"></script>
 {% endblock content %}
