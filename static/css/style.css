@@ -1,5 +1,5 @@
 /* ---   Configuration   --- */
-:root { --primary: #ff9a00; --secondary: #373737; --background: #3c3c3c; --text: #121212; --accent: #6a6a6a; }
+:root { --primary: #ff9a00; --secondary: #373737; --text: #121212; --accent: #6a6a6a; }
 @font-face { font-family: 'spataro'; src: url(../fonts/Algerian.ttf); }
 @font-face { font-family: 'hack'; src: url(../fonts/Hack.ttf); }
 @font-face { font-family: 'lcd'; src: url(../fonts/Lcd.ttf); }
@@ -17,6 +17,9 @@ div.container{ padding: 10px; margin-bottom: 75px; }
 .error{ background-color: red; padding: 5px; font-weight: bold; }
 .login{ position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
 .icon{ width: 45px; background-color: var(--primary); padding: 5px; border-radius: 10px; vertical-align: middle; }
+.modify .icon{ background-color: #00ff00; cursor: text; }
+.delete .icon{ background-color: rgb(255, 125, 125); cursor: not-allowed; }
+.restore .icon{ background-color: lightskyblue; }
 
 /* ---   Forms   --- */
 fieldset{ padding: 10px; width: 400px; margin: 10px auto; }
@@ -37,3 +40,11 @@ div.main-tab .active span{ color: var(--secondary); }
 
 /* ---   Content   --- */
 div.main-content{display: none; border: 2px solid var(--secondary); border-radius: 0 0 10px 10px;}
+div.driver{ display: grid; grid-template-columns: repeat(4, 1fr); }
+
+/* ---   Card driver   ---*/
+div.card-driver{ display: grid; grid-template-rows: repeat(3, fit-content); justify-content: center; align-items: center; margin: 10px 0; }
+div.card-driver div.info-driver p{ padding: 5px;  }
+div.card-driver div.info-driver p a{ background-color: var(--secondary); padding: 5px 10px; border-radius: 10px; }
+div.card-driver div.info-driver p a:hover{ background-color: var(--primary); color: var(--secondary); }
+div.card-driver div.links-driver{ display: flex; flex-direction: row; justify-content: space-around; margin: 15px 0; }

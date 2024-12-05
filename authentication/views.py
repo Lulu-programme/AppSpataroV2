@@ -11,7 +11,7 @@ def profil(request):
     context = {
         'title': 'Tableau de bord',
         'trucks': Truck.objects.all(),
-        'drivers': Account.objects.all(),
+        'drivers': Account.objects.all().order_by('last_name'),
     }
     return render(request, 'authentication/profil.html', context)
 
@@ -98,6 +98,9 @@ def signup_page(request):
                 drive_license_date = datetime.strptime(drive_license, '%Y-%m-%d') if drive_license else None
                 adr_license_date = datetime.strptime(adr_license, '%Y-%m-%d') if adr_license else None
                 card_drive_date = datetime.strptime(card_drive, '%Y-%m-%d') if card_drive else None
+                
+                # conversion boolean
+                is_staff_bool = int(is_staff)
 
                 # Création du camion
                 Account.objects.create_user(
@@ -113,7 +116,7 @@ def signup_page(request):
                     email=email,
                     phone=phone,
                     city=city,
-                    is_staff=True if is_staff else False,
+                    is_staff=True if is_staff_bool else False,
                 )
                 return redirect('profil')
             except ValueError as e:
@@ -124,3 +127,71 @@ def signup_page(request):
             context['error'] = 'les mots de passe ne correspondent pas'
     
     return render(request, 'authentication/signup.html', context)
+
+def modify_user(request, id):
+    user = Account.objects.get(id=id)
+    trucks = Truck.objects.all()
+    print(str(user.truck))
+    context = {
+        'title': f'Modification de {user.get_full_name()}',
+        'user': user,
+        'trucks': trucks,
+        'user_truck': str(user.truck)
+    }
+    
+    if request.method == 'POST':
+        try:
+            username = request.POST.get('username')
+            first_name = request.POST.get('first_name').capitalize()
+            last_name = request.POST.get('last_name').capitalize()
+            sector = request.POST.get('sector')
+            truck = request.POST.get('truck')
+            drive_license = request.POST.get('drive_license')
+            adr_license = request.POST.get('adr_license')
+            card_drive = request.POST.get('card_drive')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
+            city = request.POST.get('city').capitalize()
+            is_staff = request.POST.get('is_staff')
+
+            # Conversion des dates
+            drive_license_date = datetime.strptime(drive_license, '%Y-%m-%d') if drive_license else None
+            adr_license_date = datetime.strptime(adr_license, '%Y-%m-%d') if adr_license else None
+            card_drive_date = datetime.strptime(card_drive, '%Y-%m-%d') if card_drive else None
+            
+            # conversion boolean
+            is_staff_bool = int(is_staff)
+
+            # Création du camion
+            user.username=username
+            user.first_name=first_name
+            user.last_name=last_name
+            user.sector=sector
+            user.truck=Truck.objects.get(id=truck) if truck else None
+            user.drive_license=drive_license_date
+            user.adr_license=adr_license_date
+            user.card_drive=card_drive_date
+            user.email=email
+            user.phone=phone
+            user.city=city
+            user.is_staff=True if is_staff_bool else False
+            user.save()
+            return redirect('profil')
+        except ValueError as e:
+            # Gestion des erreurs de conversion
+            error = GoogleTranslator(source='auto', target='fr').translate(str(e))
+            context['error'] = f"Erreur lors de l'ajout du chauffeur : {error}"
+        
+    return render(request, 'authentication/modify_user.html', context)
+
+def restore_user(request, id):
+    user = Account.objects.get(id=id)
+    user.delete = False
+    user.save()
+    return redirect('profil')
+
+def delete_user(request, id):
+    user = Account.objects.get(id=id)
+    user.delete = True
+    user.save()
+    return redirect('profil')

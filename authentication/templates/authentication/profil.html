@@ -19,13 +19,43 @@
 </div>
 <!-- ------   Les chauffeurs   ----- -->
 <div class="main-content">
-    <h2>Les chauffeurs</h2>
-    <div class="content">
+    <div class="driver">
         {% for driver in drivers %}
         {% if not driver.is_superuser %}
         <div class="card-driver">
-            <h2>{{ driver.get_full_name }}</h2>
-            <h3>{{ driver.sector }}<h3>
+            <div class="name-sector">
+                <h2>{{ driver.get_full_name }}</h2>
+                <h3>{{ driver.sector }}</h3>
+            </div>
+            <div class="info-driver">
+                {% if not driver.is_staff %}
+                <p>
+                    Permis de conduire : {{ driver.drive_license}}
+                </p>
+                <p>
+                    Permis ADR : {{ driver.adr_license}}
+                </p>
+                <p>
+                    Carte tachygraphe : {{ driver.card_drive}}
+                </p>
+                {% endif %}
+                <p>Téléphone : {{ driver.phone }}</p>
+                <p>Email : <a href="mailto:{{ driver.email }}">{{ driver.email }}</a></p>
+                <p>Ville : {{ driver.city }}</p>
+            </div>
+            <div class="links-driver">
+                {% if driver.delete %}
+                <p class="restore"><a href="{% url "restore_user" driver.id %}">
+                    <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
+                {% else %}
+                <p class="modify"><a href="{% url "modify_user" driver.id %}">
+                    <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
+                <p><a href="#">
+                    <img src="{% static 'images/icons/password.png' %}" class="icon"></a></p>
+                <p class="delete"><a href="{% url "delete_user" driver.id %}">
+                    <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
+                {% endif %}
+            </div>
         </div>
         {% endif %}
         {% endfor %}
@@ -42,5 +72,5 @@
 {% else %}
 
 {% endif %}
-<script src="{% static 'js/opentab.js' %}"></script>
+<script src="{% static 'js/script.js' %}"></script>
 {% endblock content %}

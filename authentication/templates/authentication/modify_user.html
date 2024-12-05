@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ title }}</h1>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'modify_user' user.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Nom utilisateur</legend>
+        <input type='text' name='username' id='username' value="{{ user.username }}" required>
+    </fieldset>
+    <fieldset>
+        <legend>Prénom</legend>
+        <input type='text' name='first_name' id='first_name' value="{{ user.first_name }}" required>
+    </fieldset>
+    <fieldset>
+        <legend>Nom</legend>
+        <input type='text' name='last_name' id='last_name' value="{{ user.last_name }}" required>
+    </fieldset>
+    <fieldset>
+        <legend>Secteur</legend>
+        <div>
+            {% if user.sector == 'Administrateur' %}
+            <input type="radio" id="sector" name="sector" value="Administrateur" checked />
+            {% else %}
+            <input type="radio" id="sector" name="sector" value="Administrateur" />
+            {% endif %}
+            <label for="sector">Administrateur</label>
+        </div>
+        <div>
+            {% if user.sector == 'Gaz' %}
+            <input type="radio" id="sector" name="sector" value="Gaz" checked />
+            {% else %}
+            <input type="radio" id="sector" name="sector" value="Gaz" />
+            {% endif %}
+            <label for="sector">Gaz</label>
+        </div>
+        <div>
+            {% if user.sector == 'Distribution' %}
+            <input type="radio" id="sector" name="sector" value="Distribution" checked />
+            {% else %}
+            <input type="radio" id="sector" name="sector" value="Distribution" />
+            {% endif %}
+            <label for="sector">Distribution</label>
+        </div>
+        <div>
+            {% if user.sector == 'Chimie' %}
+            <input type="radio" id="sector" name="sector" value="Chimie" checked />
+            {% else %}
+            <input type="radio" id="sector" name="sector" value="Chimie" />
+            {% endif %}
+            <label for="sector">Chimie</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Camion</legend>
+        {% for truck in trucks %}
+        <div>
+            <input type="radio" id="truck" name="truck" value="{{ truck.id }}"
+                {% if user_truck == truck.license %}checked{% endif %} />
+            <label for="truck">{{ truck.license }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Permis de conduire</legend>
+        <input type='date' name='drive_license' id='drive_license' value="{{ user.drive_license|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Permis ADR</legend>
+        <input type='date' name='adr_license' id='adr_license' value="{{ user.adr_license|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Carte chauffeur</legend>
+        <input type='date' name='card_drive' id='card_drive' value="{{ user.card_drive|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Email</legend>
+        <input type='email' name='email' id='email' value="{{ user.email }}">
+    </fieldset>
+    <fieldset>
+        <legend>Téléphone</legend>
+        <input type='text' name='phone' id='phone' value="{{ user.phone }}">
+    </fieldset>
+    <fieldset>
+        <legend>Lieux de résidence</legend>
+        <input type='text' name='city' id='city' value="{{ user.city }}" required>
+    </fieldset>
+    <fieldset>
+        <legend>Administrateur</legend>
+        {% if user.is_staff %}
+        <div>
+            <input type="radio" id="is_staff" name="is_staff" value="0" />
+            <label for="is_staff">Non</label>
+        </div>
+        <div>
+            <input type="radio" id="is_staff" name="is_staff" value="1" checked />
+            <label for="is_staff">Oui</label>
+        </div>
+        {% else %}
+        <div>
+            <input type="radio" id="is_staff" name="is_staff" value="0" checked/>
+            <label for="is_staff">Non</label>
+        </div>
+        <div>
+            <input type="radio" id="is_staff" name="is_staff" value="1" />
+            <label for="is_staff">Oui</label>
+        </div>
+        {% endif %}
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Modification"></p>
+</form>
+{% endblock content %}

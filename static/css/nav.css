@@ -10,3 +10,4 @@ div.logo p img{ width: 100px; vertical-align: middle; padding: 10px 0; }
 div.logo p span{ font-family: 'spataro'; font-size: 18pt; margin-left: 10px; }
 div.links-list{ background-color: var(--accent); position: fixed; left: 0; bottom: 0; height: 75px; width: 100%; display: flex; flex-direction: row; justify-content: space-around; align-items: center; }
 div.links-list a span{ padding: 10px 20px; background-color: var(--primary); border-radius: 10px; }
+div.links-list a span:hover{ background-color: var(--secondary); color: var(--primary); }
