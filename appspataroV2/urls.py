@@ -30,4 +30,7 @@ urlpatterns = [
     path('modify_user/<int:id>', authentication.views.modify_user, name='modify_user'),
     path('restore_user/<int:id>', authentication.views.restore_user, name='restore_user'),
     path('delete_user/<int:id>', authentication.views.delete_user, name='delete_user'),
+    path('modify_truck/<int:id>', authentication.views.modify_truck, name='modify_truck'),
+    path('restore_truck/<int:id>', authentication.views.restore_truck, name='restore_truck'),
+    path('delete_truck/<int:id>', authentication.views.delete_truck, name='delete_truck'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

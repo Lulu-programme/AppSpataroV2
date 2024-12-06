@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>{{ title }}</h1>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'modify_truck' truck.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Immatriculation</legend>
+        <input type='text' name='license' id='license' value='{{ truck.license }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Contrôle technique</legend>
+        <input type='date' name='technical' id='technical' value="{{ truck.technical|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Contrôle tachygraphe</legend>
+        <input type='date' name='tachographe' id='tachographe' value="{{ truck.tachographe|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Contrôle ADR</legend>
+        <input type='date' name='adr' id='adr' value="{{ truck.adr|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Entretient</legend>
+        <input type='date' name='maintenance' id='maintenance' value="{{ truck.maintenace|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Poids</legend>
+        <input type='number' name='weight' id='weight' min='0' value='{{ truck.weight }}'>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Modification"></p>
+</form>
+{% endblock content %}

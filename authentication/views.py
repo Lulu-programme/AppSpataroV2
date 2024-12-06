@@ -72,6 +72,55 @@ def add_truck(request):
     
     return render(request, 'authentication/truck.html', context)
 
+def modify_truck(request, id):
+    truck = Truck.objects.get(id=id)
+    context = {
+        'title': f'Modification du {truck.license}',
+        'truck': truck,
+    }
+    if request.method == 'POST':
+        try:
+            license = request.POST.get('license', '').upper()
+            technical = request.POST.get('technical')
+            tachographe = request.POST.get('tachographe')
+            maintenance = request.POST.get('maintenance')
+            adr = request.POST.get('adr')
+            weight = request.POST.get('weight')
+
+            # Conversion des dates
+            technical_date = datetime.strptime(technical, '%Y-%m-%d') if technical else None
+            tachographe_date = datetime.strptime(tachographe, '%Y-%m-%d') if tachographe else None
+            maintenance_date = datetime.strptime(maintenance, '%Y-%m-%d') if maintenance else None
+            adr_date = datetime.strptime(adr, '%Y-%m-%d') if adr else None
+
+            # Création du camion
+            truck.license=license
+            truck.technical=technical_date
+            truck.tachographe=tachographe_date
+            truck.maintenance=maintenance_date
+            truck.adr=adr_date
+            truck.weight=weight
+            truck.save()
+            return redirect('profil')
+        except ValueError as e:
+            # Gestion des erreurs de conversion
+            error = GoogleTranslator(source='auto', target='fr').translate(str(e))
+            context['error'] = f"Erreur lors de l'ajout du camion : {error}"
+    
+    return render(request, 'authentication/modify_truck.html', context)
+
+def restore_truck(request, id):
+    truck = Truck.objects.get(id=id)
+    truck.delete = False
+    truck.save()
+    return redirect('profil')
+
+def delete_truck(request, id):
+    truck = Truck.objects.get(id=id)
+    truck.delete = True
+    truck.save()
+    return redirect('profil')
+
 def signup_page(request):
     context = {
         'title': 'Ajouter un chauffeur',
