@@ -1,17 +1,38 @@
-sector = [
+sector_list = [
     'Parking',
     'Lavage',
     'Chimie',
     'Gaz',
     'Distribution',
 ]
-country = [
+country_list = [
     'Belgique',
     'France',
     'Allemagne',
     'Pays-Bas',
     'Italie',
     'Suisse',
+]
+provision_list = [
+    'Café',
+    'Douche',
+    'Toilette',
+    'Distributeur',
+    'Salle d\'attente',
+]
+language_list = [
+    'Français',
+    'Anglais',
+    'Néerlandais',
+    'Allemand',
+    'Italien',
+    'Espagnol',
+    'Polonais',
+]
+reception_list = [
+    'Sympathique',
+    'Correct',
+    'Inexistant',
 ]
 
 def description_p(description):
@@ -33,10 +54,23 @@ def change_text_to_list(to_change):
     for i in range(len(to_change)):
         if to_change[i] == ',' or to_change[i] == '.':
             word = to_change[last_modified:i]
-            cap_word = word.strip().capitalize() + '.'
+            cap_word = word.strip().capitalize()
             changed.append(cap_word)
-            last_modified = i + 2
+            last_modified = i + 1
     return changed
 
 def change_list_to_text(to_change):
-    return ', '.join([change for change in to_change])
+    return ', '.join([change for change in to_change]) + '.'
+
+def zip_town(country, zip_code, town):
+    if country.upper() == 'PAYS-BAS':
+        code = 'NL'
+    elif country.upper() == 'ITALIE':
+        code = 'IT'
+    elif country.upper() == 'ALLEMAGNE':
+        code = 'D'
+    elif country.upper() == 'SUISSE':
+        code = 'CH'
+    else:
+        code = country[0]
+    return f'{code} - {zip_code} {town}'

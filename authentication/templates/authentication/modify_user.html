@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
-<h1>{{ title }}</h1>
+<div class="nav-content">
+    <a href="{% url 'profil' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
-<form action="{% url 'modify_user' user.id %}" method="POST">
+<form action="{% url 'modify-user' user.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Nom utilisateur</legend>

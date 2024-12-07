@@ -3,7 +3,7 @@ from django.contrib.auth.models import AbstractUser
 
 
 class Truck(models.Model):
-    license = models.CharField(max_length=50)
+    license = models.CharField(max_length=50, null=True, blank=True)
     technical = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     tachographe = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)
     maintenance = models.DateField(auto_now=False, auto_now_add=False, null=True, blank=True)

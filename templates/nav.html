@@ -21,11 +21,11 @@
     </div>
     <div class="links-list">
         {% if request.user.is_staff or request.user.is_superuser %}
-            <a href="{% url "truck" %}" class="staff"><img src="{% static 'images/icons/truck.png' %}" class="icon phone">
+            <a href="{% url "truck" %}" class="staff"><img src="{% static 'images/icons/add_truck.png' %}" class="icon phone">
             <span class="laptop-tablet">Ajouter un camion</span></a>
             <a href="{% url 'signup' %}" class="staff"><img src="{% static 'images/icons/add_user.png' %}" class="icon phone">
             <span class="laptop-tablet">Ajouter un chauffeur</span></a>
-            <a href="#" class="staff"><img src="{% static 'images/icons/client.png' %}" class="icon phone">
+            <a href="{% url "factory-station" %}" class="staff"><img src="{% static 'images/icons/factory.png' %}" class="icon phone">
             <span class="laptop-tablet">Client</span></a>
             <a href="#" class="staff"><img src="{% static 'images/icons/adr.png' %}" class="icon phone">
             <span class="laptop-tablet">ADR</span></a>
@@ -33,7 +33,7 @@
         {% if not request.user.is_staff or request.user.is_superuser %}
             <a href="#"><img src="{% static 'images/icons/day.png' %}" class="icon phone">
                 <span class="laptop-tablet">Journée</span></a>
-            <a href="#"><img src="{% static 'images/icons/client.png' %}" class="icon phone">
+            <a href="{% url "factory-station" %}"><img src="{% static 'images/icons/factory.png' %}" class="icon phone">
                 <span class="laptop-tablet">Clients</span></a>
             <a href="#"><img src="{% static 'images/icons/adr.png' %}" class="icon phone">
                 <span class="laptop-tablet">ADR</span></a>

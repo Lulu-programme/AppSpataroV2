@@ -17,20 +17,35 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 import authentication.views
+import factory.views
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    # home page
     path('admin/', admin.site.urls),
     path('', authentication.views.profil, name='profil'),
+    # authentication page
     path('login/', authentication.views.login_page, name='login'),
     path('logout/', authentication.views.logout_user, name='logout'),
     path('signup/', authentication.views.signup_page, name='signup'),
     path('truck/', authentication.views.add_truck, name='truck'),
-    path('modify_user/<int:id>', authentication.views.modify_user, name='modify_user'),
-    path('restore_user/<int:id>', authentication.views.restore_user, name='restore_user'),
-    path('delete_user/<int:id>', authentication.views.delete_user, name='delete_user'),
-    path('modify_truck/<int:id>', authentication.views.modify_truck, name='modify_truck'),
-    path('restore_truck/<int:id>', authentication.views.restore_truck, name='restore_truck'),
-    path('delete_truck/<int:id>', authentication.views.delete_truck, name='delete_truck'),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    path('modify-user/<int:id>', authentication.views.modify_user, name='modify-user'),
+    path('restore-user/<int:id>', authentication.views.restore_user, name='restore-user'),
+    path('delete-user/<int:id>', authentication.views.delete_user, name='delete-user'),
+    path('modify-truck/<int:id>', authentication.views.modify_truck, name='modify-truck'),
+    path('restore-truck/<int:id>', authentication.views.restore_truck, name='restore-truck'),
+    path('delete-truck/<int:id>', authentication.views.delete_truck, name='delete-truck'),
+    # factory page
+    path('factory-station', factory.views.factory_station, name='factory-station'),
+    path('detail/<str:slug>', factory.views.detail, name='detail'),
+    path('create-factory', factory.views.create_factory, name='create-factory'),
+    path('modify-factory/<int:id>', factory.views.modify_factory, name='modify-factory'),
+    path('create-station', factory.views.create_station, name='create-station'),
+    path('modify-station/<int:id>', factory.views.modify_station, name='modify-station'),
+    path('delete-restore/<int:id>/<str:gender>', factory.views.delete_restore, name='delete-restore'),
+] 
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) 
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

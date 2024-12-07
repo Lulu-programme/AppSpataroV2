@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'factory-station' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
+<h3>{{ factory.address }}</h3>
+<h3>{{ factory.zip_city }}</h3>
+<h3>{{ factory.gps }}</h3>
+<hr>
+<div class="detail-factory">
+    <p>Horaire : {{ factory.hourly }}</p>
+    <p>Langue parlée : {{ factory.language }}</p>
+    {% if factory.phone %}
+        <p>{{ factory.phone }}</p>
+    {% endif %}
+    {% if factory.email %}
+        <p>{{ factory.email }}</p>
+    {% endif %}
+    <p>Spécification :</p>
+    <ul>
+        {% if factory.ppe %}<li><span>&#x2918;</span>EPI : {{ factory.ppe }}</li>{% endif %}
+        {% if factory.tools %}<li><span>&#x2918;</span>Outillage et raccords : {{ factory.tools }}</li>{% endif %}
+        {% if factory.sleep %}<li><span>&#x2918;</span>Possibilté de dormir.</li>{% endif %}
+        {% if factory.reception %}<li><span>&#x2918;</span>Accueil : {{ factory.reception }}</li>{% endif %}
+        {% if factory.provision %}<li><span>&#x2918;</span>Mise à disposition : {{ factory.provision }}</li>{% endif %}
+    </ul>
+    <hr>
+    {% if factory.plan %}
+        <p class="img"><img src="{{ factory.plan.name }}" alt="Plan du site"></p>
+    {% endif %}
+    {% if descriptions %}
+        <h2>Description :</h2>
+        {% for description in descriptions %}
+            <p class="description">{{ description|safe }}</p>
+        {% endfor %}
+    {% endif %}
+</div>
+{% endblock %}

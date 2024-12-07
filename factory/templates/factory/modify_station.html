@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'factory-station' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'modify-station' station.id %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Nom de la station</legend>
+        <input type='text' name='name' id='name' value='{{ station.name }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Adresse</legend>
+        <input type='text' name='address' id='address' value='{{ station.address }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Code postal</legend>
+        <input type='text' name='zip_code' id='zip_code' value='{{ station.zip_code }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Ville</legend>
+        <input type='text' name='city' id='city' value='{{ station.city }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Pays</legend>
+        {% for country in country_list %}
+        <div>
+            <input type="radio" id="country" name="country" value="{{ country }}" {% if country == station.country %}checked{% endif %} />
+            <label for="country">{{ country }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Modification"></p>
+</form>
+{% endblock content %}

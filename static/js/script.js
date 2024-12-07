@@ -11,4 +11,4 @@ function openMain(x) {
     btns[x].classList.add("active");
 }
 
-openMain(2)
+openMain(0)

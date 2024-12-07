@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'factory-station' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'modify-factory' factory.id %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Secteur</legend>
+        {% for sector in sector_list %}
+        <div>
+            <input type="checkbox" id="sector" name="sector" value="{{ sector }}" {% if sector in sector_use %}checked{% endif %} />
+            <label for="sector">{{ sector }}</label>
+        </div>
+        {% endfor %}
+        <p class='helptext'>Plusieur choix possible.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Nom du client</legend>
+        <input type='text' name='name' id='name' value='{{ factory.name }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Adresse</legend>
+        <input type='text' name='address' id='address' value='{{ factory.address }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Code postal</legend>
+        <input type='text' name='zip_code' id='zip_code' value='{{ factory.zip_code }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Ville</legend>
+        <input type='text' name='city' id='city' value='{{ factory.city }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Pays</legend>
+        {% for country in country_list %}
+        <div>
+            <input type="radio" id="country" name="country" value="{{ country }}" {% if country == factory.country %}checked{% endif %} />
+            <label for="country">{{ country }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Coordonnées GPS</legend>
+        <input type='text' name='gps' id='gps' value='{{ factory.gps }}'>
+        <p class='helptext'>Format décimal.</p>
+        <p class='helptext'>Exemple : 12.123456, 1.123456</p>
+        <p class='helptext'>Pour les avoir aller sur Google Maps et selectionner l'entrée de l'usine, vous aurez les coordonnées décimal.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Email</legend>
+        <input type='email' name='email' id='email' {% if factory.email %}value='{{ factory.email }}'{% endif %}>
+    </fieldset>
+    <fieldset>
+        <legend>Téléphone</legend>
+        <input type='text' name='phone' id='phone' {% if factory.phone %}value='{{ factory.phone }}'{% endif %}>
+    </fieldset>
+    <fieldset>
+        <legend>Horaire</legend>
+        <input type='text' name='hourly' id='hourly' {% if factory.hourly %}value='{{ factory.hourly }}'{% endif %}>
+    </fieldset>
+    <fieldset>
+        <legend>Langues parlé</legend>
+        {% for language in language_list %}
+        <div>
+            <input type="checkbox" id="language" name="language" value="{{ language }}" {% if language in language_use %}checked{% endif %} />
+            <label for="language">{{ language }}</label>
+        </div>
+        {% endfor %}
+        <p class='helptext'>Plusieur choix possible.</p>
+    </fieldset>
+    <fieldset>
+        <legend>EPI</legend>
+        <textarea name='ppe' id='ppe' rows='10' cols='30'>{% if factory.ppe %}{{ factory.ppe }}{% endif %}</textarea>
+        <p class='helptext'>Tout les EPI obligatoires et suplémentaires.</p>
+        <p class='helptext'>Sépararer-les par une virgule et terminer par un point.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Outillages et raccord spécifique</legend>
+        <textarea name='tools' id='tools' rows='10' cols='30'>{% if factory.tools %}{{ factory.tools }}{% endif %}</textarea>
+        <p class='helptext'>Sépararer-les par une virgule et terminer par un point.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Possibilité de dormir</legend>
+        {% if factory.sleep %}
+        <div>
+            <input type="radio" id="sleep" name="sleep" value="0" />
+            <label for="sleep">Non</label>
+        </div>
+        <div>
+            <input type="radio" id="sleep" name="sleep" value="1" checked />
+            <label for="sleep">Oui</label>
+        </div>
+        {% else %}
+        <div>
+            <input type="radio" id="sleep" name="sleep" value="0" checked />
+            <label for="sleep">Non</label>
+        </div>
+        <div>
+            <input type="radio" id="sleep" name="sleep" value="1" />
+            <label for="sleep">Oui</label>
+        </div>
+        {% endif %}
+    </fieldset>
+    <fieldset>
+        <legend>Type d'acceuil</legend>
+        {% for reception in reception_list %}
+        <div>
+            <input type="radio" id="reception" name="reception" value="{{ reception }}" {% if reception == factory.reception %}checked{% endif %} />
+            <label for="reception">{{ reception }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Mise à disposition</legend>
+        {% for provision in provision_list %}
+        <div>
+            <input type="checkbox" id="provision" name="provision" value="{{ provision }}" {% if provision in provision_use %}checked{% endif %} />
+            <label for="provision">{{ provision }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Descriptions</legend>
+        <textarea name='description' id='description' rows='10' cols='30'>{{ factory.description }}</textarea>
+        <p class='helptext'>Mettre entre parenthèse ce qui est important ainsi que les numéros se trouvant sur le plan.</p>
+        <p class='helptext'>Terminer chaque étape commentaire ccompris par un point.</p>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Modification"></p>
+</form>
+{% endblock content %}

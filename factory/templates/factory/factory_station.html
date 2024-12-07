@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <h1>{{ title }}</h1>
+    <div class="btn-add">
+        <a href="{% url "create-factory" %}"><img src="{% static 'images/icons/add_factory.png' %}" class="icon tablet-phone">
+            <span class="laptop">Ajouter un client</span></a>
+        <a href="{% url "create-station" %}"><img src="{% static 'images/icons/add_station.png' %}" class="icon tablet-phone">
+            <span class="laptop">Ajouter une station</span></a>
+    </div>
+</div>
+<div class="main-tab">
+    <button class="btn-main" onclick="openMain(0)"><img src="{% static 'images/icons/factory.png' %}" class="icon phone">
+            <span class="laptop-tablet">Clients</span></button>
+    <button class="btn-main" onclick="openMain(1)"><img src="{% static 'images/icons/station.png' %}" class="icon phone">
+            <span class="laptop-tablet">Stations</span></button>
+    <button class="btn-main" onclick="openMain(2)"><img src="{% static 'images/icons/deleted.png' %}" class="icon phone">
+            <span class="laptop-tablet">supprimés</span></button>
+</div>
+<!-- ------   Les clients   ----- -->
+<div class="main-content">
+    <div class="factory">
+        {% for factory in factorys %}
+        {% if not factory.delete %}
+        <div class="card">
+            <div class="card-name">
+                <h2>{{ factory.get_title }}</h2>
+            </div>
+            <div class="card-info">
+                <p>
+                    {{ factory.zip_city }}
+                </p>
+                <p>
+                    {{ factory.sector }}
+                </p>
+            </div>
+            <div class="card-links">
+                <p class="modify"><a href="{% url "modify-factory" factory.id %}">
+                    <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
+                <p><a href="{% url "detail" slug=factory.slug %}">
+                    <img src="{% static 'images/icons/details.png' %}" class="icon"></a></p>
+                <p class="delete"><a href="{% url "delete-restore" factory.id 'factory' %}">
+                    <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<!-- ------   Les stations   ----- -->
+<div class="main-content">
+    <div class="station">
+        {% for station in stations %}
+        {% if not station.delete %}
+        <div class="card">
+            <div class="card-name">
+                <h2>{{ station.get_title }}</h2>
+            </div>
+            <div class="card-info">
+                <p>
+                    {{ station.zip_city }}
+                </p>
+                <p>
+                    {{ station.sector }}
+                </p>
+            </div>
+            <div class="card-links">
+                <p class="modify"><a href="{% url "modify-station" station.id %}">
+                    <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
+                <p class="delete"><a href="{% url "delete-restore" station.id 'station' %}">
+                    <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<!-- ------   Les supprimés   ----- -->
+<div class="main-content">
+    <div class="deleted">
+        <div class="factory">
+            {% for factory in factorys %}
+            {% if factory.delete %}
+            <div class="card">
+                <div class="card-name">
+                    <h2>{{ factory.get_title }}</h2>
+                </div>
+                <div class="card-info">
+                    <p>
+                        {{ factory.zip_city }}
+                    </p>
+                    <p>
+                        {{ factory.sector }}
+                    </p>
+                </div>
+                <div class="card-links">
+                    <p class="restore"><a href="{% url "delete-restore" factory.id 'factory' %}">
+                        <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="station">
+        {% for station in stations %}
+        {% if station.delete %}
+        <div class="card">
+            <div class="card-name">
+                <h2>{{ station.get_title }}</h2>
+            </div>
+            <div class="card-info">
+                <p>
+                    {{ station.zip_city }}
+                </p>
+                <p>
+                    {{ station.sector }}
+                </p>
+            </div>
+            <div class="card-links">
+                <p class="restore"><a href="{% url "delete-restore" station.id 'station' %}">
+                    <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock content %}

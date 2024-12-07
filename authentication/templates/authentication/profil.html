@@ -22,12 +22,12 @@
     <div class="driver">
         {% for driver in drivers %}
         {% if not driver.is_superuser %}
-        <div class="card-driver">
-            <div class="name-sector">
+        <div class="card">
+            <div class="card-name">
                 <h2>{{ driver.get_full_name }}</h2>
                 <h3>{{ driver.sector }}</h3>
             </div>
-            <div class="info-driver">
+            <div class="card-info">
                 {% if not driver.is_staff %}
                 <p>
                     Permis de conduire : {{ driver.drive_license}}
@@ -43,14 +43,14 @@
                 <p>Email : <a href="mailto:{{ driver.email }}">{{ driver.email }}</a></p>
                 <p>Ville : {{ driver.city }}</p>
             </div>
-            <div class="links-driver">
+            <div class="card-links">
                 {% if driver.delete %}
-                <p class="restore"><a href="{% url "restore_user" driver.id %}">
+                <p class="restore"><a href="{% url "restore-user" driver.id %}">
                     <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
                 {% else %}
-                <p class="modify"><a href="{% url "modify_user" driver.id %}">
+                <p class="modify"><a href="{% url "modify-user" driver.id %}">
                     <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
-                <p class="delete"><a href="{% url "delete_user" driver.id %}">
+                <p class="delete"><a href="{% url "delete-user" driver.id %}">
                     <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
                 {% endif %}
             </div>
@@ -63,12 +63,12 @@
 <div class="main-content">
     <div class="truck">
         {% for truck in trucks %}
-        <div class="card-driver">
-            <div class="name-sector">
+        <div class="card">
+            <div class="card-name">
                 <h2>{{ truck.license }}</h2>
                 <h3>{{ truck.weight }} Kg</h3>
             </div>
-            <div class="info-driver">
+            <div class="card-info">
                 <p>
                     Contrôle technique : {% if truck.technical %}{{ truck.technical }}{% else %}Pas encore de date{% endif %}
                 </p>
@@ -82,14 +82,14 @@
                     Entretient : {% if truck.maintenance %}{{ truck.maintenance }}{% else %}Pas encore de date{% endif %}
                 </p>
             </div>
-            <div class="links-driver">
+            <div class="card-links">
                 {% if truck.delete %}
-                <p class="restore"><a href="{% url "restore_truck" truck.id %}">
+                <p class="restore"><a href="{% url "restore-truck" truck.id %}">
                     <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
                 {% else %}
-                <p class="modify"><a href="{% url "modify_truck" truck.id %}">
+                <p class="modify"><a href="{% url "modify-truck" truck.id %}">
                     <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
-                <p class="delete"><a href="{% url "delete_truck" truck.id %}">
+                <p class="delete"><a href="{% url "delete-truck" truck.id %}">
                     <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
                 {% endif %}
             </div>
