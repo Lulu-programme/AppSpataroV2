@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <h1>{{ title }}</h1>
+    <div class="btn-add">
+        <a href="{% url "create-product" %}"><img src="{% static 'images/icons/add_product.png' %}" class="icon tablet-phone">
+            <span class="laptop">Ajouter un produit</span></a>
+    </div>
+</div>
+<div class="main-tab">
+    <button class="btn-main" onclick="openMain(0)"><img src="{% static 'images/icons/adr.png' %}" class="icon phone">
+            <span class="laptop-tablet">Produits</span></button>
+    <button class="btn-main" onclick="openMain(1)"><img src="{% static 'images/icons/deleted.png' %}" class="icon phone">
+            <span class="laptop-tablet">Supprimé</span></button>
+</div>
+<!-- ---   Produits   --- -->
+<div class="main-content">
+    <div class="adr">
+        {% for adr in adrs %}
+        {% if not adr.delete %}
+        <div class="identi-adr">
+            <div class="panel">
+                <div class="panel-adr">
+                    <p>{{ adr.classification }}</p>
+                    <p>{{ adr.onu }}</p>
+                </div>
+                {% for label in adr.labels_change %}
+                <div class="panel-labels">
+                    <img src="{{ label }}" alt="plaque étiquette {{ labels }}">
+                </div>
+                {% endfor %}
+            </div>
+            <div class="product">
+                <p>{{ adr.name }}</p>
+                {% if adr.nsa %}
+                <p><span class="laptop-tablet">,</span> {{ adr.nsa }}</p>
+                {% endif %}
+                <p><span class="laptop-tablet">,</span> {{ adr.labels_list }}</p>
+                {% if adr.packing_group %}
+                <p><span class="laptop-tablet">,</span> {{ adr.print_group }}</p>
+                {% endif %}
+                {% if adr.tunnel_code %}
+                <p><span class="laptop-tablet">,</span> ( {{ adr.tunnel_code }} )</p>
+                {% endif %}
+            </div>
+            <div class="info">
+                {% if adr.ppe %}
+                <p>EPI supplémentaire : {{ adr.ppe }}</p>
+                {% endif %}
+                {% if adr.risks %}
+                <p>Détails et risque : {{ adr.risks }}</p>
+                {% endif %}
+            </div>
+            <div class="links">
+                <p class="modify"><a href="{% url "modify-product" adr.id %}">
+                    <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
+                <p><a href="#">
+                    <img src="{% static 'images/icons/details.png' %}" class="icon"></a></p>
+                <p class="delete"><a href="{% url "delete-restore" adr.id %}">
+                    <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<!-- ---   Supprimés   --- -->
+<div class="main-content">
+    <div class="adr">
+        {% for adr in adrs %}
+        {% if adr.delete %}
+        <div class="identi-adr">
+            <div class="panel">
+                <div class="panel-adr">
+                    <p>{{ adr.classification }}</p>
+                    <p>{{ adr.onu }}</p>
+                </div>
+                {% for label in adr.labels_change %}
+                <div class="panel-labels">
+                    <img src="{{ label }}" alt="plaque étiquette {{ labels }}">
+                </div>
+                {% endfor %}
+            </div>
+            <div class="product">
+                <p>{{ adr.name }}</p>
+                {% if adr.nsa %}
+                <p><span class="laptop-tablet">,</span> {{ adr.nsa }}</p>
+                {% endif %}
+                <p><span class="laptop-tablet">,</span> {{ adr.labels_list }}</p>
+                {% if adr.packing_group %}
+                <p><span class="laptop-tablet">,</span> {{ adr.print_group }}</p>
+                {% endif %}
+                {% if adr.tunnel_code %}
+                <p><span class="laptop-tablet">,</span> ( {{ adr.tunnel_code }} )</p>
+                {% endif %}
+            </div>
+            <div class="info">
+                {% if adr.ppe %}
+                <p>EPI supplémentaire : {{ adr.ppe }}</p>
+                {% endif %}
+                {% if adr.risks %}
+                <p>Détails et risque : {{ adr.risks }}</p>
+                {% endif %}
+            </div>
+            <div class="links">
+                <p class="restore"><a href="{% url "delete-restore" adr.id %}">
+                    <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

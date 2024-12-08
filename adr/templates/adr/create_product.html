@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'adr' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'create-product' %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Numéro UN</legend>
+        <input type='text' name='classification' id='classification' required>
+    </fieldset>
+    <fieldset>
+        <legend>Numéro du produit</legend>
+        <input type='number' name='onu' id='onu' required>
+    </fieldset>
+    <fieldset>
+        <legend>Nom du produit</legend>
+        <input type='text' name='name' id='name' required>
+    </fieldset>
+    <fieldset>
+        <legend>NSA</legend>
+        <input type='text' name='nsa' id='nsa'>
+    </fieldset>
+    <fieldset>
+        <legend>Plaque étiquettes</legend>
+        {% for labels in labels_list %}
+        <div>
+            <input type="checkbox" id="labels" name="labels" value="{{ labels }}" />
+            <label for="labels">{{ labels }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Groupe d'emballage</legend>
+        <input type='number' name='packing_group' id='packing_group' value="0">
+    </fieldset>
+    <fieldset>
+        <legend>Code tunnel</legend>
+        <input type='text' name='tunnel_code' id='tunnel_code' required>
+    </fieldset>
+    <fieldset>
+        <legend>EPI spécifique</legend>
+        <textarea name='ppe' id='ppe' rows='10' cols='34'></textarea>
+        <p class='helptext'>Séparer-les par une virgule et terminer par un point.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Risque lié au produit</legend>
+        <textarea name='risks' id='risks' rows='10' cols='34'></textarea>
+        <p class='helptext'>Séparer-les par une virgule et terminer par un point.</p>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Ajouter"></p>
+</form>
+{% endblock content %}

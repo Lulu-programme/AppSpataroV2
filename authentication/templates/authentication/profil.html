@@ -45,12 +45,12 @@
             </div>
             <div class="card-links">
                 {% if driver.delete %}
-                <p class="restore"><a href="{% url "restore-user" driver.id %}">
+                <p class="restore"><a href="{% url "delete-restore" driver.id 'user' %}">
                     <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
                 {% else %}
                 <p class="modify"><a href="{% url "modify-user" driver.id %}">
                     <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
-                <p class="delete"><a href="{% url "delete-user" driver.id %}">
+                <p class="delete"><a href="{% url "delete-restore" driver.id 'user' %}">
                     <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
                 {% endif %}
             </div>
@@ -84,12 +84,12 @@
             </div>
             <div class="card-links">
                 {% if truck.delete %}
-                <p class="restore"><a href="{% url "restore-truck" truck.id %}">
+                <p class="restore"><a href="{% url "delete-restore" truck.id 'truck' %}">
                     <img src="{% static 'images/icons/restore.png' %}" class="icon"></a></p>
                 {% else %}
                 <p class="modify"><a href="{% url "modify-truck" truck.id %}">
                     <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
-                <p class="delete"><a href="{% url "delete-truck" truck.id %}">
+                <p class="delete"><a href="{% url "delete-restore" truck.id 'truck' %}">
                     <img src="{% static 'images/icons/delete.png' %}" class="icon"></a></p>
                 {% endif %}
             </div>

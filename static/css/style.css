@@ -42,9 +42,9 @@ div.main-tab .active{ background-color: var(--primary); }
 div.main-tab .active span{ color: var(--secondary); }
 
 /* ---   Content   --- */
-div.main-content{display: none; }
+div.main-content{display: none;}
 div.driver, div.truck, div.factory, div.station{ display: grid; grid-template-columns: repeat(4, 1fr); }
-div.dleted{ display: flex; flex-direction: column; }
+div.deleted{ display: flex; flex-direction: column; }
 
 /* ---   Card driver   ---*/
 div.card{ display: grid; grid-template-rows: repeat(3, fit-content); justify-content: center; align-items: center; margin: 10px; border: 2px solid var(--secondary); }
@@ -63,3 +63,14 @@ div.detail-factory p.description span.marked{ color: red; letter-spacing: 2px; f
 div.detail-factory ul{ margin-left: 75px; }
 div.detail-factory ul li{ list-style: none; }
 div.detail-factory ul li span{ font-size: 22pt; padding-right: 10px; vertical-align: middle; }
+
+/* ---   ADR   --- */
+div.identi-adr{ display: flex; flex-direction: column; justify-content: center; align-items: center; border-bottom: 2px solid var(--text); }
+div.identi-adr div.panel{ display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20px; padding: 20px; }
+div.identi-adr div.panel div.panel-adr{ display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 10px 10px 10px; border: 3px solid black; border-radius: 10px; background-color: var(--primary); }
+div.identi-adr div.panel div.panel-adr p{ padding: 10px 25px; font-family: 'lcd'; font-size: 23pt; text-align: center; }
+div.identi-adr div.panel div.panel-labels img{ width: 125px; }
+div.identi-adr div.product{ display: flex; flex-direction: row; padding: 10px; }
+div.identi-adr div.product p{ font-size: 17pt; }
+div.identi-adr div.info{ display: flex; flex-direction: column; padding: 10px; }
+div.identi-adr div.links{ display: flex; flex-direction: row; gap: 20px; padding: 10px; }

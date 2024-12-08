@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Truck, Account
 from datetime import datetime
 from deep_translator import GoogleTranslator
@@ -36,6 +36,7 @@ def logout_user(request):
     logout(request)
     return redirect('login')
 
+@user_passes_test(lambda user: user.is_staff)
 def add_truck(request):
     context = {
         'title': 'Ajouter un camion'
@@ -72,6 +73,7 @@ def add_truck(request):
     
     return render(request, 'authentication/truck.html', context)
 
+@user_passes_test(lambda user: user.is_staff)
 def modify_truck(request, id):
     truck = Truck.objects.get(id=id)
     context = {
@@ -109,18 +111,7 @@ def modify_truck(request, id):
     
     return render(request, 'authentication/modify_truck.html', context)
 
-def restore_truck(request, id):
-    truck = Truck.objects.get(id=id)
-    truck.delete = False
-    truck.save()
-    return redirect('profil')
-
-def delete_truck(request, id):
-    truck = Truck.objects.get(id=id)
-    truck.delete = True
-    truck.save()
-    return redirect('profil')
-
+@user_passes_test(lambda user: user.is_staff)
 def signup_page(request):
     context = {
         'title': 'Ajouter un chauffeur',
@@ -177,6 +168,7 @@ def signup_page(request):
     
     return render(request, 'authentication/signup.html', context)
 
+@user_passes_test(lambda user: user.is_staff)
 def modify_user(request, id):
     user = Account.objects.get(id=id)
     trucks = Truck.objects.all()
@@ -233,14 +225,16 @@ def modify_user(request, id):
         
     return render(request, 'authentication/modify_user.html', context)
 
-def restore_user(request, id):
-    user = Account.objects.get(id=id)
-    user.delete = False
-    user.save()
-    return redirect('profil')
-
-def delete_user(request, id):
-    user = Account.objects.get(id=id)
-    user.delete = True
-    user.save()
+@user_passes_test(lambda user: user.is_staff)
+def delete_restore(request, id, gender):
+    if gender == 'user':
+        used = Account.objects.get(id=id)
+    else:
+        used = Truck.objects.get(id=id)
+        
+    if used.delete:
+        used.delete = False
+    else:
+        used.delete = True
+    used.save()
     return redirect('profil')

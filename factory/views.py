@@ -47,9 +47,9 @@ def create_factory(request):
             description = request.POST.get('description')
             
             # Conversion des listes en chaînes
-            sector_text = change_list_to_text(sector)
-            language_text = change_list_to_text(language)
-            provision_text = change_list_to_text(provision)
+            sector_text = change_list_to_text(sector, '.')
+            language_text = change_list_to_text(language, '.')
+            provision_text = change_list_to_text(provision, '.')
             
             # Enregistrement du fichier dans le dossier media
             fs = FileSystemStorage()
@@ -76,7 +76,7 @@ def create_factory(request):
                 provision=provision_text,
                 plan=file_url,
                 description=description,
-                slug=f'{name.lower()}-{city.lower()}',
+                slug=f'{name.lower().replace(' ', '-')}-{city.lower().replace(' ', '-')}',
             )
             return redirect('factory-station')
             
@@ -98,9 +98,9 @@ def modify_factory(request, id):
         'language_list': language_list,
         'reception_list': reception_list,
         'factory': factory,
-        'sector_use': change_text_to_list(factory.sector),
-        'language_use': change_text_to_list(factory.language),
-        'provision_use': change_text_to_list(factory.provision),
+        'sector_use': change_text_to_list(factory.sector, '.'),
+        'language_use': change_text_to_list(factory.language, '.'),
+        'provision_use': change_text_to_list(factory.provision, '.'),
     }
     if request.method == 'POST':
         try:
@@ -124,9 +124,9 @@ def modify_factory(request, id):
             description = request.POST.get('description')
             
             # Conversion des listes en chaînes
-            sector_text = change_list_to_text(sector)
-            language_text = change_list_to_text(language)
-            provision_text = change_list_to_text(provision)
+            sector_text = change_list_to_text(sector, '.')
+            language_text = change_list_to_text(language, '.')
+            provision_text = change_list_to_text(provision, '.')
             
             # Création de l'objet Factory
             factory.sector=sector_text

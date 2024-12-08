@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'adr' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'modify-product' product.id %}" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Numéro UN</legend>
+        <input type='text' name='classification' id='classification' value='{{ product.classification }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Numéro du produit</legend>
+        <input type='number' name='onu' id='onu' value='{{ product.onu }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Nom du produit</legend>
+        <input type='text' name='name' id='name' value='{{ product.name }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>NSA</legend>
+        <input type='text' name='nsa' id='nsa' {% if product.nsa %}value='{{ product.nsa }}'{% endif %}>
+    </fieldset>
+    <fieldset>
+        <legend>Plaque étiquettes</legend>
+        {% for labels in labels_list %}
+        <div>
+            <input type="checkbox" id="labels" name="labels" value="{{ labels }}" {% if labels in list_labels %}checked{% endif %} />
+            <label for="labels">{{ labels }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Groupe d'emballage</legend>
+        <input type='number' name='packing_group' id='packing_group' {% if product.packing_group %}value='{{ product.packing_group }}'{% endif %}>
+    </fieldset>
+    <fieldset>
+        <legend>Code tunnel</legend>
+        <input type='text' name='tunnel_code' id='tunnel_code' {% if product.tunnel_code %}value='{{ product.tunnel_code }}'{% endif %} required>
+    </fieldset>
+    <fieldset>
+        <legend>EPI spécifique</legend>
+        <textarea name='ppe' id='ppe' rows='10' cols='34'>{% if product.ppe %}{{ product.ppe }}{% endif %}</textarea>
+        <p class='helptext'>Séparer-les par une virgule et terminer par un point.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Risque lié au produit</legend>
+        <textarea name='risks' id='risks' rows='10' cols='34'>{% if product.risks %}{{ product.risks }}{% endif %}</textarea>
+        <p class='helptext'>Séparer-les par une virgule et terminer par un point.</p>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Modification"></p>
+</form>
+{% endblock content %}

@@ -34,6 +34,23 @@ reception_list = [
     'Correct',
     'Inexistant',
 ]
+labels_list = [
+    '2.1',
+    '2.2',
+    '2.3',
+    '3',
+    '4.1',
+    '4.2',
+    '4.3',
+    '5.1',
+    '5.2',
+    '6.1',
+    '6.2',
+    '8',
+    '9',
+    'Environnement',
+    'Température',
+]
 
 def description_p(description):
     paragraph = []
@@ -48,19 +65,19 @@ def description_p(description):
             last_point = i + 1
     return paragraph
 
-def change_text_to_list(to_change):
+def change_text_to_list(to_change, final):
     changed = []
     last_modified = 0
     for i in range(len(to_change)):
-        if to_change[i] == ',' or to_change[i] == '.':
+        if to_change[i] == ',' or to_change[i] == final:
             word = to_change[last_modified:i]
             cap_word = word.strip().capitalize()
             changed.append(cap_word)
             last_modified = i + 1
     return changed
 
-def change_list_to_text(to_change):
-    return ', '.join([change for change in to_change]) + '.'
+def change_list_to_text(to_change, last):
+    return ', '.join([change for change in to_change]) + last
 
 def zip_town(country, zip_code, town):
     if country.upper() == 'PAYS-BAS':

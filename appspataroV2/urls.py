@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path
 import authentication.views
 import factory.views
+import adr.views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -30,20 +31,22 @@ urlpatterns = [
     path('logout/', authentication.views.logout_user, name='logout'),
     path('signup/', authentication.views.signup_page, name='signup'),
     path('truck/', authentication.views.add_truck, name='truck'),
-    path('modify-user/<int:id>', authentication.views.modify_user, name='modify-user'),
-    path('restore-user/<int:id>', authentication.views.restore_user, name='restore-user'),
-    path('delete-user/<int:id>', authentication.views.delete_user, name='delete-user'),
-    path('modify-truck/<int:id>', authentication.views.modify_truck, name='modify-truck'),
-    path('restore-truck/<int:id>', authentication.views.restore_truck, name='restore-truck'),
-    path('delete-truck/<int:id>', authentication.views.delete_truck, name='delete-truck'),
+    path('modify-user/<int:id>/', authentication.views.modify_user, name='modify-user'),
+    path('modify-truck/<int:id>/', authentication.views.modify_truck, name='modify-truck'),
+    path('delete-restore/<int:id>/<str:gender>/', authentication.views.delete_restore, name='delete-restore'),
     # factory page
-    path('factory-station', factory.views.factory_station, name='factory-station'),
-    path('detail/<str:slug>', factory.views.detail, name='detail'),
-    path('create-factory', factory.views.create_factory, name='create-factory'),
-    path('modify-factory/<int:id>', factory.views.modify_factory, name='modify-factory'),
-    path('create-station', factory.views.create_station, name='create-station'),
-    path('modify-station/<int:id>', factory.views.modify_station, name='modify-station'),
-    path('delete-restore/<int:id>/<str:gender>', factory.views.delete_restore, name='delete-restore'),
+    path('factory-station/', factory.views.factory_station, name='factory-station'),
+    path('detail/<str:slug>/', factory.views.detail, name='detail'),
+    path('create-factory/', factory.views.create_factory, name='create-factory'),
+    path('modify-factory/<int:id>/', factory.views.modify_factory, name='modify-factory'),
+    path('create-station/', factory.views.create_station, name='create-station'),
+    path('modify-station/<int:id>/', factory.views.modify_station, name='modify-station'),
+    path('delete-restore/<int:id>/<str:gender>/', factory.views.delete_restore, name='delete-restore'),
+    # adr page
+    path('adr/', adr.views.adr, name='adr'),
+    path('create-product/', adr.views.create_product, name='create-product'),
+    path('modify-product/<int:id>/', adr.views.modify_product, name='modify-product'),
+    path('delete-restore/<int:id>/', adr.views.delete_restore, name='delete-restore'),
 ] 
 
 if settings.DEBUG:
