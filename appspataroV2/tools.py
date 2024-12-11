@@ -51,6 +51,50 @@ labels_list = [
     'Environnement',
     'Température',
 ]
+months_to_search = [
+    'Jan', 
+    'Fév', 
+    'Mars', 
+    'Avr', 
+    'Mai', 
+    'Juin', 
+    'Juil', 
+    'Aout', 
+    'Sept', 
+    'Oct', 
+    'Nov', 
+    'Déc',
+]
+months_entries = [
+    'Janvier',
+    'Février',
+    'Mars',
+    'Avril',
+    'Mai',
+    'Juin',
+    'Juillet',
+    'Aout',
+    'Septembre',
+    'Octobre',
+    'Novembre',
+    'Décembre',
+]
+
+def convert_seconds(seconds, string):
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    if string:
+        return f'{hours:02}h{minutes:02}'
+    return hours, minutes
+
+def hours_seconds(hours, minutes):
+    return (hours * 3600) + (minutes * 60)
+
+def calculate_laps_time(hour_start, hour_end, minute_start, minute_end, string):
+    second_start = hours_seconds(hour_start, minute_start)
+    second_end = hours_seconds(hour_end, minute_end)
+    seconds = second_end - second_start
+    return convert_seconds(seconds, string)
 
 def description_p(description):
     paragraph = []
