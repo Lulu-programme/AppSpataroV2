@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'daytime' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    <h1>{{ title }}</h1>
+</div>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'signup' %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Nom du chauffeur</legend>
+        <input type='text' name='name_driver' id='name_driver' value='{{ request.user.get_full_name }}' required>
+    </fieldset>
+    <fieldset>
+        <legend>Camion</legend>
+        {% for truck in trucks %}
+        <div>
+            <input type="checkbox" id="truck" name="truck" value="{{ truck.id }}" {% if request.user.truck == truck.id %}checked{% endif %} />
+            <label for="truck">{{ truck.license }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>remorque</legend>
+        <input type='text' name='trailer' id='trailer' required>
+        <p class='helptext'>Si pas de remorque mettre solo.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Secteur</legend>
+        <div>
+            <input type="checkbox" id="sector" name="sector" value="Gaz" {% if request.user.sector == 'Gaz' %}checked{% endif %} />
+            <label for="sector">Gaz</label>
+        </div>
+        <div>
+            <input type="checkbox" id="sector" name="sector" value="Distribution" {% if request.user.sector == 'Distribution' %}checked{% endif %}/>
+            <label for="sector">Distribution</label>
+        </div>
+        <div>
+            <input type="checkbox" id="sector" name="sector" value="Chimie" {% if request.user.sector == 'Chimie' %}checked{% endif %}/>
+            <label for="sector">Chimie</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Lieux de départ</legend>
+        <input type='text' name='city_start' id='city_start' required>
+    </fieldset>
+    <fieldset>
+        <legend>Date de départ</legend>
+        <input type='date' name='date_start' id='date_start' value="{{ day|date:'Y-m-d' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Heure de départ</legend>
+        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Kilomètre de départ</legend>
+        <input type='text' name='km_start' id='km_start' required>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Inscription"></p>
+</form>
+{% endblock content %}

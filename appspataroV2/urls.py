@@ -19,6 +19,7 @@ from django.urls import path
 import authentication.views
 import factory.views
 import adr.views
+import daytime.views
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -47,6 +48,9 @@ urlpatterns = [
     path('create-product/', adr.views.create_product, name='create-product'),
     path('modify-product/<int:id>/', adr.views.modify_product, name='modify-product'),
     path('delete-restore/<int:id>/', adr.views.delete_restore, name='delete-restore'),
+    # daytime page
+    path('daytime/', daytime.views.daytime, name='daytime'),
+    path('create_work/<str:gender>/', daytime.views.create_work, name='create_work')
 ] 
 
 if settings.DEBUG:

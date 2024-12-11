@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <h1>{{ title }}</h1>
+    <div class="btn-add">
+        <a href="{% url "create_work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
+            <span class="laptop">Commencer la journée</span></a>
+        <a href="#"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
+            <span class="laptop">Ajouter un arrêt</span></a>
+        <a href="#"><img src="{% static 'images/icons/trailer.png' %}" class="icon tablet-phone">
+            <span class="laptop">Changer de remorque</span></a>
+        <a href="#"><img src="{% static 'images/icons/add_fuel.png' %}" class="icon tablet-phone">
+            <span class="laptop">Ajouter du carburant</span></a>
+    </div>
+</div>
+
+<script src="{% static 'js/script.js' %}"></script>
+{% endblock %}

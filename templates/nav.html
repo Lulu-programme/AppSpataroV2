@@ -31,7 +31,7 @@
             <span class="laptop-tablet">ADR</span></a>
         {% endif %}
         {% if not request.user.is_staff or request.user.is_superuser %}
-            <a href="#"><img src="{% static 'images/icons/day.png' %}" class="icon phone">
+            <a href="{% url "daytime" %}"><img src="{% static 'images/icons/day.png' %}" class="icon phone">
                 <span class="laptop-tablet">Journée</span></a>
             <a href="{% url "factory-station" %}"><img src="{% static 'images/icons/factory.png' %}" class="icon phone">
                 <span class="laptop-tablet">Clients</span></a>

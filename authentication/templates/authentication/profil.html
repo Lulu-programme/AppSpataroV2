@@ -100,8 +100,22 @@
 <div class="main-content">
     <h2>Résumé</h2>
 </div>
+<!--     -----     Les chauffeurs     -----     -->
 {% else %}
-
+<div class="main-tab">
+    <button class="btn-main" onclick="openMain(0)"><img src="{% static 'images/icons/folio.png' %}" class="icon phone">
+            <span class="laptop-tablet">Feuilles</span></button>
+    <button class="btn-main" onclick="openMain(1)"><img src="{% static 'images/icons/drivers.png' %}" class="icon phone">
+            <span class="laptop-tablet">Profile</span></button>
+</div>
+<div class="main-content">
+    <h2>Feuilles</h2>
+</div>
+<div class="main-content">
+    <h2>Profile</h2>
+    <p>{{ request.user.get_full_name }}</p>
+    <p>{{ request.user.truck }}</p>
+</div>
 {% endif %}
 <script src="{% static 'js/script.js' %}"></script>
 {% endblock content %}
