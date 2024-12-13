@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import StartDaytime, ChangeDaytime, FactoryDaytime, GasoilDaytime
 from authentication.models import Truck
+from appspataroV2.tools import change_list_to_text
 import datetime
 
 def daytime(request):
@@ -8,6 +9,9 @@ def daytime(request):
     context = {
         'title': day,
     }
+    if StartDaytime.objects.last():
+        start = StartDaytime.objects.last()
+        context['start'] = start
     
     return render(request, 'daytime/daytime.html', context)
 
@@ -15,6 +19,7 @@ def create_work(request, gender):
     context = {
         'trucks': Truck.objects.all(),
         'day': datetime.datetime.now(),
+        'user_truck': str(request.user.truck)
     }
     
     if gender == 'start':
@@ -31,15 +36,15 @@ def create_work(request, gender):
             km_start = request.POST.get('km_start')
 
             # Conversion des dates
-            date_start_date = datetime.strptime(date_start, '%Y-%m-%d') if date_start else None
-            hour_start_hour = datetime.strptime(hour_start, '%H:%M') if hour_start else None
+            date_start_date = datetime.datetime.strptime(date_start, '%Y-%m-%d') if date_start else None
+            hour_start_hour = datetime.datetime.strptime(hour_start, '%H:%M') if hour_start else None
             
             form.create(
                 name_driver=name_driver,
-                truck=truck,
+                truck=change_list_to_text(truck, '.'),
                 trailer=trailer,
-                sector=sector,
-                city_start=city_start,
+                sector=change_list_to_text(sector, '.'),
+                city_start=city_start.capitalize(),
                 date_start=date_start_date,
                 hour_start=hour_start_hour,
                 km_start=km_start,

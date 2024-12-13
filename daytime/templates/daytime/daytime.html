@@ -4,16 +4,22 @@
 <div class="nav-content">
     <h1>{{ title }}</h1>
     <div class="btn-add">
-        <a href="{% url "create_work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
-            <span class="laptop">Commencer la journée</span></a>
+        
+        {% if not start %}<a href="{% url "create_work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
+            <span class="laptop">Commencer la journée</span></a>{% else %}
         <a href="#"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
             <span class="laptop">Ajouter un arrêt</span></a>
         <a href="#"><img src="{% static 'images/icons/trailer.png' %}" class="icon tablet-phone">
             <span class="laptop">Changer de remorque</span></a>
         <a href="#"><img src="{% static 'images/icons/add_fuel.png' %}" class="icon tablet-phone">
-            <span class="laptop">Ajouter du carburant</span></a>
+            <span class="laptop">Ajouter du carburant</span></a>{% endif %}
     </div>
 </div>
-
+{% if start %}
+<div class='start-day'>
+    <h2>{{ start.name_driver }} - {{ start.sector }}</h2>
+    <p>{{ start.truck }}</p>
+</div>
+{% endif %}
 <script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

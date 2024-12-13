@@ -8,7 +8,7 @@
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
-<form action="{% url 'signup' %}" method="POST">
+<form action="{% url 'create_work' 'start' %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Nom du chauffeur</legend>
@@ -18,7 +18,7 @@
         <legend>Camion</legend>
         {% for truck in trucks %}
         <div>
-            <input type="checkbox" id="truck" name="truck" value="{{ truck.id }}" {% if request.user.truck == truck.id %}checked{% endif %} />
+            <input type="checkbox" id="truck" name="truck" value="{{ truck.license }}" {% if user_truck == truck.license %}checked{% endif %} />
             <label for="truck">{{ truck.license }}</label>
         </div>
         {% endfor %}
@@ -59,6 +59,6 @@
         <legend>Kilomètre de départ</legend>
         <input type='text' name='km_start' id='km_start' required>
     </fieldset>
-    <p class="submitted"><input type="submit" value="Inscription"></p>
+    <p class="submitted"><input type="submit" value="Commencer"></p>
 </form>
 {% endblock content %}
