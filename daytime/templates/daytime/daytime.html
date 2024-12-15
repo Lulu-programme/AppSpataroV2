@@ -4,14 +4,14 @@
 <div class="nav-content">
     <h1>{{ title }}</h1>
     <div class="btn-add">
-        
-        {% if not start or start.complet %}<a href="{% url "create_work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
+        {% if start.compled or not start%}
+        <a href="{% url "create-work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
             <span class="laptop">Commencer la journée</span></a>{% else %}
-        <a href="#"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
+        <a href="{% url "create-work" 'factory' %}"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
             <span class="laptop">Ajouter un arrêt</span></a>
-        <a href="#"><img src="{% static 'images/icons/trailer.png' %}" class="icon tablet-phone">
+        <a href="{% url "create-work" 'change' %}"><img src="{% static 'images/icons/trailer.png' %}" class="icon tablet-phone">
             <span class="laptop">Changer de remorque</span></a>
-        <a href="#"><img src="{% static 'images/icons/add_fuel.png' %}" class="icon tablet-phone">
+        <a href="{% url "create-work" 'gasoil' %}"><img src="{% static 'images/icons/add_fuel.png' %}" class="icon tablet-phone">
             <span class="laptop">Ajouter du carburant</span></a>{% endif %}
     </div>
 </div>
@@ -23,15 +23,27 @@
         <p>Remorque : {{ start.trailer }}</p>
         <p>Lieux de départ : {{ start.city_start }}</p>
         <p>Date de départ : {{ start.date_start }}</p>
-        <p>Heure de départ : {{ start.hour_start }}</p>
-        <p>Kilomètre de départ : {{ start.km_start }}</p>
+        <p>Heure de départ : {{ start.hour_start|time:'H\hi' }}</p>
+        <p>Kilomètre de départ : {{ start.km_start }} KM</p>
     </div>
     {% if not start.compled %}
     <div class="links">
-        <p class="modify"><a href="#">
+        <p class="modify"><a href="{% url "modify-work" 'start' start.id %}">
             <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
-        <p><a href="#">
+        <p><a href="{% url "completed-work" 'start' start.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
+    </div>
+    {% else %}
+    <p>Date de fin : {{ start.date_end }}</P>
+    <div class='info'>
+        <p>Lieux de fin : {{ start.city_end }}</p>
+        <p>Heure de fin : {{ start.hour_end|time:'H\hi' }}</p>
+        <p>Kilomètre de fin : {{ start.km_end }} KM</p>
+    </div>
+    <div class='report'>
+        <p>Total kilomètres : {{ start.total_km }} KM</p>
+        <p>Total heures : {{ start.total_hours }}</p>
+        {% if dislodge %}<p>Délogement</p>{% else %}<p>À la maison</p>{% endif %}
     </div>
     {% endif %}
 </div>

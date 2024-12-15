@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="nav-content">
+    <a href="{% url 'daytime' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
+    {% if start %}
+    <h1>{{ title }}{{ object.date_start }}</h1>
+    {% else %}
+    <h1>{{ title }}</h1>
+    {% endif %}
+</div>
+{% if error %}
+<h2 class="error">{{ error }}</h2>
+{% endif %}
+<form action="{% url 'completed-work' 'start' object.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Date de fin</legend>
+        <input type='date' name='date_end' id='date_end' value="{{ day|date:'Y-m-d' }}" required>
+    </fieldset>
+    <fieldset>
+        <legend>Lieux de fin</legend>
+        <input type='text' name='city_end' id='city_end' required>
+    </fieldset>
+    <fieldset>
+        <legend>Heure de fin</legend>
+        <input type='time' name='hour_end' id='hour_end' value="{{ day|time:'H:i' }}" required>
+    </fieldset>
+    <fieldset>
+        <legend>Kilomètre de fin</legend>
+        <input type='text' name='km_end' id='km_end' required>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Valider"></p>
+</form>
+{% endblock content %}

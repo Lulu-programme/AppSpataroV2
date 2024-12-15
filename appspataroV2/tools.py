@@ -94,7 +94,9 @@ def calculate_laps_time(hour_start, hour_end, minute_start, minute_end, string):
     second_start = hours_seconds(hour_start, minute_start)
     second_end = hours_seconds(hour_end, minute_end)
     seconds = second_end - second_start
-    return convert_seconds(seconds, string)
+    if string:
+        return convert_seconds(seconds, string)
+    return seconds
 
 def description_p(description):
     paragraph = []

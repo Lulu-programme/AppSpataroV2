@@ -31,8 +31,12 @@ class StartDaytime(models.Model):
         return f'{self.hour_end.hour:02}h{self.hour_end.minute:02}'
 
     def total_hours(self):
-        hours = calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, True)
-        return hours
+        if self.date_start == self.date_end:
+            return calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, True)
+        else:
+            hours_1 = calculate_laps_time(self.hour_start.hour, 24, self.hour_start.minute, 0, False)
+            hours_2 = calculate_laps_time(0, self.hour_end.hour, 0, self.hour_end.minute, False)
+            return convert_seconds(hours_1 + hours_2, True)
     
     def add_work(self, work_id, work_type):
         """
@@ -53,7 +57,6 @@ class StartDaytime(models.Model):
 
 
 class FactoryDaytime(models.Model):
-    name_driver = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     hour_arrival = models.TimeField(auto_now=False, auto_now_add=False)
     km_arrival = models.IntegerField()
@@ -71,19 +74,18 @@ class FactoryDaytime(models.Model):
     formel = models.CharField(default='factory', max_length=50)
 
     def __str__(self):
-        return f'{self.name_driver} - {self.name}'
+        return self.name
 
     def total_work(self):
         return calculate_laps_time(self.start_work.hour, self.end_work.hour, self.start_work.minute, self.end_work.minute, True)
     
     def total_wait(self):
-        to_place = hours_seconds(calculate_laps_time(self.hour_arrival.hour, self.hour_start.hour, self.hour_arrival.minute, self.hour_start.minute, False))
-        to_work = hours_seconds(calculate_laps_time(self.start_work.hour, self.end_work.hour, self.start_work.minute, self.end_work.minute, False))
+        to_place = calculate_laps_time(self.hour_arrival.hour, self.hour_start.hour, self.hour_arrival.minute, self.hour_start.minute, False)
+        to_work = calculate_laps_time(self.start_work.hour, self.end_work.hour, self.start_work.minute, self.end_work.minute, False)
         return convert_seconds(to_place - to_work, True)
 
 
 class ChangeDaytime(models.Model):
-    name_driver = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     hour_arrival = models.TimeField(auto_now=False, auto_now_add=False)
     km_arrival = models.IntegerField()
@@ -98,11 +100,10 @@ class ChangeDaytime(models.Model):
     formel = models.CharField(default='trailer', max_length=50)
 
     def __str__(self):
-        return f'{self.name_driver} - {self.name}'
+        return self.name
 
 
 class GasoilDaytime(models.Model):
-    name_driver = models.CharField(max_length=100)
     name = models.CharField(max_length=100)
     hour_arrival = models.TimeField(auto_now=False, auto_now_add=False)
     km_arrival = models.IntegerField()
@@ -113,4 +114,4 @@ class GasoilDaytime(models.Model):
     formel = models.CharField(default='gasoil', max_length=50)
 
     def __str__(self):
-        return f'{self.name_driver} - {self.name}'
+        return self.name
