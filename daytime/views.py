@@ -26,7 +26,7 @@ def create_work(request, gender):
         form = StartDaytime.objects.all()
         context['title'] = 'Commencer la journée'
         if request.method == 'POST':
-            name_driver = request.user.get_full_name()
+            name_driver = request.user.get_full_name() 
             truck = request.POST.getlist('truck')
             trailer = request.POST.get('trailer')
             sector = request.POST.getlist('sector')

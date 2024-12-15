@@ -5,7 +5,7 @@
     <h1>{{ title }}</h1>
     <div class="btn-add">
         
-        {% if not start %}<a href="{% url "create_work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
+        {% if not start or start.complet %}<a href="{% url "create_work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
             <span class="laptop">Commencer la journée</span></a>{% else %}
         <a href="#"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
             <span class="laptop">Ajouter un arrêt</span></a>
@@ -18,7 +18,22 @@
 {% if start %}
 <div class='start-day'>
     <h2>{{ start.name_driver }} - {{ start.sector }}</h2>
-    <p>{{ start.truck }}</p>
+    <div class="info">
+        <p>Tracteur : {{ start.truck }}</p>
+        <p>Remorque : {{ start.trailer }}</p>
+        <p>Lieux de départ : {{ start.city_start }}</p>
+        <p>Date de départ : {{ start.date_start }}</p>
+        <p>Heure de départ : {{ start.hour_start }}</p>
+        <p>Kilomètre de départ : {{ start.km_start }}</p>
+    </div>
+    {% if not start.compled %}
+    <div class="links">
+        <p class="modify"><a href="#">
+            <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
+        <p><a href="#">
+            <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 <script src="{% static 'js/script.js' %}"></script>

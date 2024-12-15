@@ -52,9 +52,11 @@ def create_factory(request):
             provision_text = change_list_to_text(provision, '.')
             
             # Enregistrement du fichier dans le dossier media
-            fs = FileSystemStorage()
-            filename = fs.save(plan.name, plan)
-            file_url = fs.url(filename)
+            file_url = None
+            if plan:
+                fs = FileSystemStorage()
+                filename = fs.save(plan.name, plan)
+                file_url = fs.url(filename)
             
             # Création de l'objet Factory
             Factory.objects.create(
