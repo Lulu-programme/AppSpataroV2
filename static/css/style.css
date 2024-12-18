@@ -76,11 +76,11 @@ div.identi-adr div.info{ display: flex; flex-direction: column; padding: 10px; }
 div.identi-adr div.links{ display: flex; flex-direction: row; gap: 20px; padding: 10px; }
 
 /* ---   Daytime   --- */
-div.start-day{ display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; border-bottom: 2px solid var(--text); }
-div.start-day p{ padding: 10px; }
-div.start-day div.info{ display: grid; grid-template-columns: repeat(3, 1fr); }
-div.start-day div.info p{ text-align: center; padding: 5px 15px; border: 2px solid var(--primary); margin: 5px; }
-div.start-day div.links{ display: flex; flex-direction: row; }
-div.start-day div.links p{ padding: 5px 20px; }
+div.start-day, div.factory-day, div.change-day{ display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 10px; border-bottom: 2px solid var(--text); }
+div.start-day p, div.factory-day p, div.change-day p{ padding: 10px; }
+div.start-day div.info, div.factory-day div.info, div.change-day div.info{ display: grid; grid-template-columns: repeat(3, 1fr); }
+div.start-day div.info p, div.factory-day div.info p, div.change-day div.info p{ text-align: center; padding: 5px 15px; border: 2px solid var(--primary); margin: 5px; }
+div.start-day div.links, div.factory-day div.links, div.change-day div.links{ display: flex; flex-direction: row; }
+div.start-day div.links p, div.factory-day div.links p, div.change-day div.links p{ padding: 5px 20px; }
 div.start-day div.report{ display: grid; grid-template-columns: repeat(3, 1fr); }
 div.start-day div.report p{ text-align: center; padding: 5px 15px; border: 2px solid #171278; margin: 5px; }

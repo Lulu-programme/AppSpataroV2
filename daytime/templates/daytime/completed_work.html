@@ -12,6 +12,8 @@
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
+<!--   Start daytime   -->
+{% if gender == 'start' %}
 <form action="{% url 'completed-work' 'start' object.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
@@ -31,5 +33,75 @@
         <input type='text' name='km_end' id='km_end' required>
     </fieldset>
     <p class="submitted"><input type="submit" value="Valider"></p>
-</form>
+</form>{% endif %}
+<!--   Change daytime   -->
+{% if gender == 'change' %}
+<form action="{% url 'completed-work' 'change' object.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Immatriculation</legend>
+        <input type='text' name='trailer' id='trailer' required>
+    </fieldset>
+    <fieldset>
+        <legend>État</legend>
+        <div>
+            <input type="radio" id="condition" name="condition" value="Bon état" />
+            <label for="condition">Bon état</label>
+        </div>
+        <div>
+            <input type="radio" id="condition" name="condition" value="Correct" />
+            <label for="condition">Correct</label>
+        </div>
+        <div>
+            <input type="radio" id="condition" name="condition" value="Mad Max" />
+            <label for="condition">Mad Max</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Éclairages</legend>
+        <div>
+            <input type="radio" id="lights" name="lights" value="Bon état" />
+            <label for="lights">Bon état</label>
+        </div>
+        <div>
+            <input type="radio" id="lights" name="lights" value="À changer" />
+            <label for="lights">À changer</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Pneus</legend>
+        <div>
+            <input type="radio" id="tires" name="tires" value="Bon état" />
+            <label for="tires">Bon état</label>
+        </div>
+        <div>
+            <input type="radio" id="tires" name="tires" value="Correct" />
+            <label for="tires">Correct</label>
+        </div>
+        <div>
+            <input type="radio" id="tires" name="tires" value="À changer" />
+            <label for="tires">À changer</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Chargée</legend>
+        <div>
+            <input type="radio" id="wheight" name="wheight" value="1" />
+            <label for="wheight">Oui</label>
+        </div>
+        <div>
+            <input type="radio" id="wheight" name="wheight" value="0" />
+            <label for="wheight">Non</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Heure de départ</legend>
+        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Infos supplémentaires</legend>
+        <textarea name='comment' id='comment' rows='10' cols='30'></textarea>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Valider"></p>
+</form>{% endif %}
 {% endblock content %}

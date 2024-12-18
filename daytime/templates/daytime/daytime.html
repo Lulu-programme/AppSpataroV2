@@ -47,6 +47,56 @@
     </div>
     {% endif %}
 </div>
+{% for halt in halts %}
+{% if halt.formel == 'factory' %}
+<div class='factory-day'>
+    <h1>{{ halt.name }}</h1>
+    <div class='info'>
+        {% if halt.hour_arrival %}<p>Heure d'arrivé : {{ halt.hour_arrival|time:'H\hi' }}</p>{% endif %}
+        {% if halt.start_work %}<p>Début du travail : {{ halt.start_work|time:'H\hi' }}</p>{% endif %}
+        {% if halt.cmr %}<p>CMR : {{ halt.cmr }}</p>{% endif %}
+        {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
+        {% if halt.end_work %}<p>Fin de travail : {{ halt.end_work|time:'H\hi' }}</p>{% endif %}
+        {% if halt.command %}<p>N° de commande : {{ halt.command }}</p>{% endif %}
+        {% if halt.product %}<p>Produit : {{ halt.product }}</p>{% endif %}
+        {% if halt.wheight %}<p>Poids chargé : {{ halt.wheight }} Kg</p>{% endif %}
+        {% if halt.km_arrival %}<p>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</p>{% endif %}
+    </div>
+    {% if halt.km_filled %}<h3>Kilomètre à charge : {{ halt.km_filled }} Km</h3>{% endif %}
+    {% if halt.km_empty %}<h3>Kilomètre à vide : {{ halt.km_empty }} Km</h3>{% endif %}
+    {% if halt.comment %}<h3>Commentaire : {{ halt.comment }}</h3>{% endif %}
+    {% if not halt.compled %}
+    <div class="links">
+        <p class="modify"><a href="{% url "modify-work" 'factory' halt.id %}">
+            <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
+        <p><a href="{% url "completed-work" 'factory' halt.id %}">
+            <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
+    </div>{% endif %}
+</div>
+{% endif %}
+{% if halt.formel == 'change' %}
+<div class='change-day'>
+    <h1>{{ halt.name }}</h1>
+    <div class='info'>
+        {% if halt.hour_arrival %}<p>Heure d'arrivé : {{ halt.hour_arrival|time:'H\hi' }}</p>{% endif %}
+        {% if halt.trailer %}<p>Immatriculation : {{ halt.trailer }}</p>{% endif %}
+        {% if halt.lights %}<p>Éclairages : {{ halt.lights }}</p>{% endif %}
+        {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
+        {% if halt.condition %}<p>État de la remorque : {{ halt.condition }}</p>{% endif %}
+        {% if halt.tires %}<p>État des pneus : {{ halt.tires}}</p>{% endif %}
+
+    </div>
+    {% if halt.km_arrival %}<h3>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</h3>{% endif %}
+    {% if halt.wheight %}<h3>Remorque chargée</h3>{% else %}<h3>Remorque vide</h3>{% endif %}
+    {% if halt.comment %}<h3>Commentaire : <br/>{{ halt.comment }}</h3>{% endif %}
+    {% if not halt.compled %}
+    <div class="links">
+        <p><a href="{% url "completed-work" 'change' halt.id %}">
+            <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
+    </div>{% endif %}
+</div>
+{% endif %}
+{% endfor %}
 {% endif %}
 <script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

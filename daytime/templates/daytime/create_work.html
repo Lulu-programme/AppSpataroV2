@@ -27,7 +27,7 @@
     </fieldset>
     <fieldset>
         <legend>remorque</legend>
-        <input type='text' name='trailer' id='trailer' {% if object %}value='{{ object.trailer }}'{% endif %} required>
+        <input type='text' name='trailer' id='trailer' {% if object.trailer %}value='{{ object.trailer }}'{% endif %} required>
         <p class='helptext'>Si pas de remorque mettre solo.</p>
     </fieldset>
     <fieldset>
@@ -47,7 +47,7 @@
     </fieldset>
     <fieldset>
         <legend>Lieux de départ</legend>
-        <input type='text' name='city_start' id='city_start' {% if object %}value='{{ object.city_end }}'{% endif %} required>
+        <input type='text' name='city_start' id='city_start' {% if object.city_end %}value='{{ object.city_end }}'{% endif %} required>
     </fieldset>
     <fieldset>
         <legend>Date de départ</legend>
@@ -59,7 +59,7 @@
     </fieldset>
     <fieldset>
         <legend>Kilomètre de départ</legend>
-        <input type='text' name='km_start' id='km_start' {% if object %}value='{{ object.km_end }}'{% endif %} required>
+        <input type='text' name='km_start' id='km_start' {% if object.km_end %}value='{{ object.km_end }}'{% endif %} required>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
 </form>{% endif %}
@@ -82,7 +82,30 @@
     </fieldset>
     <fieldset>
         <legend>Kilomètre d'arrivée</legend>
-        <input type='text' name='km_arrival' id='km_arrival' {% if object %}value='{{ object.km_end }}'{% endif %} required>
+        <input type='text' name='km_arrival' id='km_arrival' required>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Commencer"></p>
+</form>{% endif %}
+<!--   Change daytime   -->
+{% if gender == 'change' %}
+<form action="{% url 'create-work' 'change' %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Nom du client</legend>
+        {% for factory in factorys %}
+        <div>
+            <input type="radio" id="name" name="name" value="{{ factory.get_title }}" />
+            <label for="name">{{ factory.get_title }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Heure d'arrivée</legend>
+        <input type='time' name='hour_arrival' id='hour_arrival' value="{{ day|time:'H:i' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Kilomètre d'arrivée</legend>
+        <input type='text' name='km_arrival' id='km_arrival' required>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
 </form>{% endif %}

@@ -51,6 +51,9 @@ class StartDaytime(models.Model):
         """
         return [work["id"] for work in self.work if work["type"] == work_type]
     
+    def get_work(self):
+        return [work for work in self.work]
+    
     def add_trailer(self, new_trailer):
         self.trailer = f'{self.trailer} - {new_trailer}'
         self.save()
@@ -97,7 +100,7 @@ class ChangeDaytime(models.Model):
     hour_start = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     comment = models.TextField(blank=True)
     compled = models.BooleanField(default=False)
-    formel = models.CharField(default='trailer', max_length=50)
+    formel = models.CharField(default='change', max_length=50)
 
     def __str__(self):
         return self.name

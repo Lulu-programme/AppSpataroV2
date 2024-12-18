@@ -12,6 +12,8 @@
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
+<!--   Start daytime   -->
+{% if gender == 'start' %}
 <form action="{% url 'modify-work' 'start' object.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
@@ -51,5 +53,5 @@
         <input type='text' name='km_start' id='km_start' value='{{ object.km_start }}' required>
     </fieldset>
     <p class="submitted"><input type="submit" value="Modification"></p>
-</form>
+</form>{% endif %}
 {% endblock content %}
