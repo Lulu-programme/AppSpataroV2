@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from .models import Factory, Station
 from appspataroV2.tools import sector_list, country_list, provision_list, language_list, reception_list, change_list_to_text, change_text_to_list, description_p
 from deep_translator import GoogleTranslator
@@ -7,10 +8,25 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 
 @login_required()
 def factory_station(request):
+    # Récupérer les données
+    factorys_list = Factory.objects.all().order_by('name')
+    stations_list = Station.objects.all().order_by('name')
+
+    # Pagination : 10 éléments par page
+    factorys_paginator = Paginator(factorys_list, 8)
+    stations_paginator = Paginator(stations_list, 8)
+
+    # Numéro des pages actuelles
+    factorys_page_number = request.GET.get('page_factorys', 1)
+    stations_page_number = request.GET.get('page_stations', 1)
+
+    # Obtenir les pages actuelles
+    factorys = factorys_paginator.get_page(factorys_page_number)
+    stations = stations_paginator.get_page(stations_page_number)
     context = {
         'title': 'Les clients - Les stations',
-        'factorys': Factory.objects.all().order_by('name'),
-        'stations': Station.objects.all().order_by('name'),
+        'factorys': factorys,
+        'stations': stations,
     }
     return render(request, 'factory/factory_station.html', context)
 
@@ -47,6 +63,7 @@ def create_factory(request):
             description = request.POST.get('description')
             
             # Conversion des listes en chaînes
+            sleep_bool = True if sleep == 'Oui' else False
             sector_text = change_list_to_text(sector, '.')
             language_text = change_list_to_text(language, '.')
             provision_text = change_list_to_text(provision, '.')
@@ -58,34 +75,41 @@ def create_factory(request):
                 filename = fs.save(plan.name, plan)
                 file_url = fs.url(filename)
             
-            # Création de l'objet Factory
-            Factory.objects.create(
-                sector=sector_text,
-                name=name,
-                address=address,
-                zip_code=zip_code,
-                city=city,
-                country=country,
-                gps=gps,
-                phone=phone,
-                email=email,
-                hourly=hourly,
-                language=language_text,
-                ppe=ppe,
-                tools=tools,
-                sleep=True if sleep else False,
-                reception=reception,
-                provision=provision_text,
-                plan=file_url,
-                description=description,
-                slug=f'{name.lower().replace(' ', '-')}-{city.lower().replace(' ', '-')}',
-            )
-            return redirect('factory-station')
+            # Vérification de l'usine
+            inside = Factory.objects.filter(name=name, city=city).exists()
+            
+            if not inside:
+                # Création de l'objet Factory
+                Factory.objects.create(
+                    sector=sector_text,
+                    name=name,
+                    address=address,
+                    zip_code=zip_code,
+                    city=city,
+                    country=country,
+                    gps=gps,
+                    phone=phone,
+                    email=email,
+                    hourly=hourly,
+                    language=language_text,
+                    ppe=ppe,
+                    tools=tools,
+                    sleep=sleep_bool,
+                    reception=reception,
+                    provision=provision_text,
+                    plan=file_url,
+                    description=description,
+                    slug=f'{name.lower().replace(' ', '-')}-{city.lower().replace(' ', '-')}',
+                )
+                return redirect('factory-station')
+            else:
+                factory = Factory.objects.get(name=name, city=city)
+                context['error'] = f'Le client {factory.get_title()} existe déjà.'
             
         except ValueError as e:
             # Gestion des erreurs
             error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-            context['error'] = f"Erreur lors de l'ajout du camion : {error}"
+            context['error'] = f"Erreur lors de l'ajout du client : {error}"
         
     return render(request, 'factory/create_factory.html', context)
 
@@ -93,7 +117,7 @@ def create_factory(request):
 def modify_factory(request, id):
     factory = Factory.objects.get(id=id)
     context = {
-        'title': 'Ajouter un client',
+        'title': f'Modification de {factory.get_title()}',
         'sector_list': sector_list,
         'country_list': country_list,
         'provision_list': provision_list,
@@ -126,6 +150,7 @@ def modify_factory(request, id):
             description = request.POST.get('description')
             
             # Conversion des listes en chaînes
+            sleep_bool = True if sleep == 'Oui' else False
             sector_text = change_list_to_text(sector, '.')
             language_text = change_list_to_text(language, '.')
             provision_text = change_list_to_text(provision, '.')
@@ -144,7 +169,7 @@ def modify_factory(request, id):
             factory.language=language_text
             factory.ppe=ppe
             factory.tools=tools
-            factory.sleep=True if sleep else False
+            factory.sleep=sleep_bool
             factory.reception=reception
             factory.provision=provision_text
             factory.description=description
@@ -174,20 +199,27 @@ def create_station(request):
             city = request.POST.get('city').capitalize()
             country = request.POST.get('country')
             
-            # Création de l'objet Factory
-            Station.objects.create(
-                name=name,
-                address=address,
-                zip_code=zip_code,
-                city=city,
-                country=country,
-            )
-            return redirect('factory-station')
+            # Vérification de l'existance
+            inside = Station.objects.filter(name=name, city=city)
+            
+            if not inside:
+                # Création de l'objet Factory
+                Station.objects.create(
+                    name=name,
+                    address=address,
+                    zip_code=zip_code,
+                    city=city,
+                    country=country,
+                )
+                return redirect('factory-station')
+            else:
+                station = Station.objects.get(name=name, city=city)
+                context['error'] = f'La station {station.get_title} existe déjà'
             
         except ValueError as e:
             # Gestion des erreurs
             error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-            context['error'] = f"Erreur lors de l'ajout du camion : {error}"
+            context['error'] = f"Erreur lors de l'ajout de la station : {error}"
         
     return render(request, 'factory/create_station.html', context)
 

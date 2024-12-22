@@ -8,7 +8,7 @@
 
 /* ---   Main settings   --- */
 *{ margin: 0; padding: 0; box-sizing: content-box; font-size: 14pt; font-family: 'text'; font-weight: normal; color: var(--text); }
-a{ text-decoration: none; font-family: 'hack'; color: var(--primary); }
+a{ text-decoration: none; font-family: 'hack'; }
 h1{ text-align: center; font-size: 20pt; color: var(--primary); background-color: var(--secondary); padding: 10px 30px; margin: 10px auto; border-radius: 10px; width: fit-content; }
 h2{ text-align: center; font-size: 18pt; margin: 10px; border-radius: 10px; }
 h3{ text-align: center; font-size: 16pt; margin: 10px; }
@@ -42,8 +42,11 @@ div.main-tab .active{ background-color: var(--primary); }
 div.main-tab .active span{ color: var(--secondary); }
 
 /* ---   Content   --- */
-div.main-content{display: none;}
+div.main-content{display: none; flex-direction: column;}
 div.driver, div.truck, div.factory, div.station{ display: grid; grid-template-columns: repeat(4, 1fr); }
+div.pagination{ width: 100%; display: flex; flex-direction: row; justify-content: center; align-items: center; padding: 10px; }
+div.pagination a, div.pagination span{ padding: 10px;}
+div.pagination a{ background-color: var(--primary); border-radius: 10px; }
 div.deleted{ display: flex; flex-direction: column; }
 
 /* ---   Card driver   ---*/

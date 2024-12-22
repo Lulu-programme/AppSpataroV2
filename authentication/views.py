@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Truck, Account
@@ -8,10 +9,27 @@ from deep_translator import GoogleTranslator
 
 @login_required
 def profil(request):
+    # Récupérer les données
+    trucks_list = Truck.objects.all()
+    drivers_list = Account.objects.filter(is_superuser=False).order_by('last_name')
+
+    # Pagination : 10 éléments par page
+    trucks_paginator = Paginator(trucks_list, 8)
+    drivers_paginator = Paginator(drivers_list, 8)
+
+    # Numéro des pages actuelles
+    trucks_page_number = request.GET.get('page_trucks', 1)
+    drivers_page_number = request.GET.get('page_drivers', 1)
+
+    # Obtenir les pages actuelles
+    trucks = trucks_paginator.get_page(trucks_page_number)
+    drivers = drivers_paginator.get_page(drivers_page_number)
+
+    # Passer les données paginées au contexte
     context = {
         'title': 'Tableau de bord',
-        'trucks': Truck.objects.all(),
-        'drivers': Account.objects.all().order_by('last_name'),
+        'trucks': trucks,
+        'drivers': drivers,
     }
     return render(request, 'authentication/profil.html', context)
 
@@ -29,7 +47,7 @@ def login_page(request):
             login(request, user)
             return redirect('profil')
         else:
-            context['message'] = f'{request.POST['username']} invalide.'
+            context['message'] = f'{request.POST.get('username', '')} invalide.'
     return render(request, 'authentication/login.html', context)
     
 def logout_user(request):

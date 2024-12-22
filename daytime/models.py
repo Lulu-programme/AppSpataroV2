@@ -1,5 +1,5 @@
 from django.db import models
-from appspataroV2.tools import calculate_laps_time, hours_seconds, convert_seconds
+from appspataroV2.tools import calculate_laps_time, convert_seconds
 
 
 class StartDaytime(models.Model):
@@ -31,12 +31,8 @@ class StartDaytime(models.Model):
         return f'{self.hour_end.hour:02}h{self.hour_end.minute:02}'
 
     def total_hours(self):
-        if self.date_start == self.date_end:
-            return calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, True)
-        else:
-            hours_1 = calculate_laps_time(self.hour_start.hour, 24, self.hour_start.minute, 0, False)
-            hours_2 = calculate_laps_time(0, self.hour_end.hour, 0, self.hour_end.minute, False)
-            return convert_seconds(hours_1 + hours_2, True)
+        return calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, True)
+
     
     def add_work(self, work_id, work_type):
         """
@@ -65,12 +61,12 @@ class FactoryDaytime(models.Model):
     km_arrival = models.IntegerField()
     start_work = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     end_work = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    cmr = models.TextField(blank=True)
-    command = models.TextField(blank=True)
-    product = models.CharField(max_length=100, blank=True, null=True)
+    cmr = models.TextField(blank=True, null=True)
+    command = models.TextField(blank=True, null=True)
+    product = models.TextField(blank=True, null=True)
     wheight = models.IntegerField(blank=True, null=True)
     hour_start = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
-    comment = models.TextField(blank=True)
+    comment = models.TextField(blank=True, null=True)
     km_filled = models.IntegerField(blank=True, null=True)
     km_empty = models.IntegerField(blank=True, null=True)
     compled = models.BooleanField(default=False)

@@ -58,6 +58,15 @@
         {% endif %}
         {% endfor %}
     </div>
+    <div class="pagination">
+        {% if drivers.has_previous %}
+        <a href="?page_drivers={{ drivers.previous_page_number }}">Précédent</a>
+        {% endif %}
+        <span>Page {{ drivers.number }} de {{ drivers.paginator.num_pages }}</span>
+        {% if drivers.has_next %}
+        <a href="?page_drivers={{ drivers.next_page_number }}">Suivant</a>
+        {% endif %}
+    </div>
 </div>
 <!-- ------   Les camions   ----- -->
 <div class="main-content">
@@ -95,6 +104,16 @@
             </div>
         </div>
         {% endfor %}
+    </div>
+    <div class="pagination">
+        {% if trucks.has_previous %}
+        <a href="?page_trucks={{ trucks.previous_page_number }}">Précédent</a>
+        {% endif %}
+        <span>Page {{ trucks.number }} de {{ trucks.paginator.num_pages }}</span>
+        {% if trucks.has_next %}
+        <a href="?page_trucks={{ trucks.next_page_number }}">Suivant</a>
+        {% endif %}
+    </div>
 </div>
 <!-- ------   Les graphiques   ----- -->
 <div class="main-content">

@@ -64,6 +64,15 @@
         {% endif %}
         {% endfor %}
     </div>
+    <div class="pagination">
+        {% if adrs.has_previous %}
+        <a href="?page_adr={{ adrs.previous_page_number }}">Précédent</a>
+        {% endif %}
+        <span>Page {{ adrs.number }} de {{ adrs.paginator.num_pages }}</span>
+        {% if adrs.has_next %}
+        <a href="?page_adr={{ adrs.next_page_number }}">Suivant</a>
+        {% endif %}
+    </div>
 </div>
 <!-- ---   Supprimés   --- -->
 <div class="main-content">

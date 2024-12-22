@@ -7,7 +7,7 @@ function openMain(x) {
         btns[i].classList.remove("active");
     }
 
-    contents[x].style.display = "block";
+    contents[x].style.display = "flex";
     btns[x].classList.add("active");
 }
 

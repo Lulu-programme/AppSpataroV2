@@ -47,6 +47,15 @@
         {% endif %}
         {% endfor %}
     </div>
+    <div class="pagination">
+        {% if factorys.has_previous %}
+        <a href="?page_factorys={{ factorys.previous_page_number }}">Précédent</a>
+        {% endif %}
+        <span>Page {{ factorys.number }} de {{ factorys.paginator.num_pages }}</span>
+        {% if factorys.has_next %}
+        <a href="?page_factorys={{ factorys.next_page_number }}">Suivant</a>
+        {% endif %}
+    </div>
 </div>
 <!-- ------   Les stations   ----- -->
 <div class="main-content">
@@ -74,6 +83,15 @@
         </div>
         {% endif %}
         {% endfor %}
+    </div>
+    <div class="pagination">
+        {% if stations.has_previous %}
+        <a href="?page_stations={{ stations.previous_page_number }}">Précédent</a>
+        {% endif %}
+        <span>Page {{ stations.number }} de {{ stations.paginator.num_pages }}</span>
+        {% if stations.has_next %}
+        <a href="?page_stations={{ stations.next_page_number }}">Suivant</a>
+        {% endif %}
     </div>
 </div>
 <!-- ------   Les supprimés   ----- -->

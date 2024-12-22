@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from .models import StartDaytime, ChangeDaytime, FactoryDaytime, GasoilDaytime
 from authentication.models import Truck
 from factory.models import Factory, Station
+from adr.models import Adr
 from appspataroV2.tools import change_list_to_text, change_text_to_list
 import datetime
 
@@ -14,7 +15,6 @@ def daytime(request):
     if StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last():
         start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
         work_list = []
-        
         for work in start.work:
             work_type = work.get('type')
             work_id = work.get('id')
@@ -213,12 +213,12 @@ def create_work(request, gender):
 def modify_work(request, gender, id):
     context = {
         'trucks': Truck.objects.all(),
+        'gender': gender,
     }
     
     if gender == 'start':
         start = StartDaytime.objects.get(id=id)
         context['title'] = 'Modification du '
-        context['object'] = start
         context['user_truck'] = change_text_to_list(start.truck, '.')
         context['start'] = True
         if request.method == 'POST':
@@ -229,7 +229,22 @@ def modify_work(request, gender, id):
             start.km_start = request.POST.get('km_start')
             start.save()
             return redirect('daytime')
+    
+    if gender == 'factory':
+        start = FactoryDaytime.objects.get(id=id)
+        products = Adr.objects.all().order_by('onu')
+        context['products'] = products
+        context['list_product'] = change_text_to_list(start.product, '.', True) if start.product else None
+        context['title'] = f'Modification du travail chez {start.name}'
+        if request.method == 'POST':
+            start.start_work = datetime.datetime.strptime(request.POST.get('start_work'), '%H:%M') if request.POST.get('start_work') else None
+            start.cmr = request.POST.get('cmr').upper() if request.POST.get('cmr') else None
+            start.command = request.POST.get('command').upper() if request.POST.get('command') else None
+            start.product = change_list_to_text(request.POST.getlist('product'), '.') if request.POST.getlist('product') else None
+            start.save()
+            return redirect('daytime')
         
+    context['object'] = start
     return render(request, 'daytime/modify_work.html', context)
 
 def completed_work(request, gender, id):

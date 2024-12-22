@@ -54,4 +54,33 @@
     </fieldset>
     <p class="submitted"><input type="submit" value="Modification"></p>
 </form>{% endif %}
+<!--   Factory daytime   -->
+{% if gender == 'factory' %}
+<form action="{% url 'modify-work' 'factory' object.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Début du travail</legend>
+        <input type='time' name='start_work' id='start_work' value="{% if object.start_work %}{{ object.start_work|time:'H:i' }}{% endif %}">
+    </fieldset>
+    <fieldset>
+        <legend>Numéro de cmr</legend>
+        <textarea name='cmr' id='cmr' rows='10' cols='30'></textarea>
+        <p class='helptext'>Si plusieurs cmrs : séparer les par un virgule et terminer par un point.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Numéro de référence</legend>
+        <textarea name='command' id='command' rows='10' cols='30'></textarea>
+        <p class='helptext'>Si plusieurs références : séparer les par un virgule et terminer par un point.</p>
+    </fieldset>
+    <fieldset>
+        <legend>Produits</legend>
+        {% for product in products %}
+        <div>
+            <input type="checkbox" id="product" name="product" value="{{ product.id }}" {% if product.id in list_product %}checked{% endif %} />
+            <label for="product">{{ product.name }}-{{ product.nsa }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Modification"></p>
+</form>{% endif %}
 {% endblock content %}
