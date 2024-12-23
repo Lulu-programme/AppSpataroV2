@@ -4,7 +4,7 @@ from .models import StartDaytime, ChangeDaytime, FactoryDaytime, GasoilDaytime
 from authentication.models import Truck
 from factory.models import Factory, Station
 from adr.models import Adr
-from appspataroV2.tools import change_list_to_text, change_text_to_list
+from appspataroV2.tools import change_list_to_text, change_text_to_list, validate_list
 import datetime
 
 def daytime(request):
@@ -76,9 +76,9 @@ def create_work(request, gender):
         
     if gender == 'factory':
         start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
-        start_list = change_text_to_list(start.sector, '.')
+        start_list = change_text_to_list(start.sector, '.', False)
         factorys = sorted(
-            [fac for fac in Factory.objects.all() if any(i in change_text_to_list(fac.sector, '.') for i in start_list)],
+            [fac for fac in Factory.objects.all() if any(i in change_text_to_list(fac.sector, '.', False) for i in start_list)],
             key=lambda x: x.name  # Trie par le champ 'name' ou autre critère
         )
         form = FactoryDaytime.objects.all()
@@ -145,9 +145,6 @@ def create_work(request, gender):
                     km_empty = km_arrival - start.km_start
                 else:
                     km_empty = 0  # Valeur par défaut si aucune distance n'est définie
-
-            # Logs pour vérifier les calculs
-            print("Last km:", last_km, "Km empty:", km_empty, "Km filled:", km_filled, 'km arrival:', km_arrival)
 
             # Création de l'entrée
             try:
@@ -233,15 +230,76 @@ def modify_work(request, gender, id):
     if gender == 'factory':
         start = FactoryDaytime.objects.get(id=id)
         products = Adr.objects.all().order_by('onu')
+        list_product = [prod['id'] for prod in start.get_product()]
         context['products'] = products
-        context['list_product'] = change_text_to_list(start.product, '.', True) if start.product else None
         context['title'] = f'Modification du travail chez {start.name}'
+        
+        # Retrouver la dernière remorque chargée ou vide pour récupérer le/les cmr et commande
+        start_last = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).order_by('-id')
+        last_cmr = None
+        last_command = None
+        last_list_cmr = None
+        last_list_command = None
+        filled = None
+
+        max_iterations = 2  # Limite à 2 éléments
+        for index, entry in enumerate(start_last):
+            if filled is not None or index >= max_iterations:
+                break
+
+            if entry.work:  # Vérifie que `work` n'est pas vide ou None
+                for w in reversed(entry.work):  # Parcours inverse de `work`
+                    try:
+                        if w.get('type') == 'factory':
+                            fact = FactoryDaytime.objects.get(id=w.get('id'))
+                            if fact.wheight:
+                                filled = True
+                                list_product = [prod['id'] for prod in fact.get_product()]
+                                # Validation et traitement des CMR
+                                if validate_list(fact.cmr) == '1':
+                                    last_cmr = fact.cmr
+                                elif validate_list(fact.cmr) == '+':
+                                    last_list_cmr = change_text_to_list(fact.cmr, '.', False)
+                                
+                                # Validation et traitement des commandes
+                                if validate_list(fact.command) == '1':
+                                    last_command = fact.command
+                                elif validate_list(fact.command) == '+':
+                                    last_list_command = change_text_to_list(fact.command, '.', False)
+                                
+                                break  # Sort de la boucle dès qu'une remorque remplie est trouvée
+                    except FactoryDaytime.DoesNotExist:
+                        context.setdefault('errors', []).append(f"FactoryDaytime introuvable pour ID {w.get('id')}.")
+                    except ChangeDaytime.DoesNotExist:
+                        context.setdefault('errors', []).append(f"ChangeDaytime introuvable pour ID {w.get('id')}.")
+                        
+        # Ajouter les résultats au contexte
+        if filled:
+            context['last_cmr'] = last_cmr
+            context['last_command'] = last_command
+            context['last_list_cmr'] = last_list_cmr
+            context['last_list_command'] = last_list_command
+        else:
+            context['last_cmr'] = None
+            context['last_command'] = None
+            context['last_list_cmr'] = None
+            context['last_list_command'] = None
+
+        context['list_product'] = list_product
+        
         if request.method == 'POST':
             start.start_work = datetime.datetime.strptime(request.POST.get('start_work'), '%H:%M') if request.POST.get('start_work') else None
             start.cmr = request.POST.get('cmr').upper() if request.POST.get('cmr') else None
             start.command = request.POST.get('command').upper() if request.POST.get('command') else None
-            start.product = change_list_to_text(request.POST.getlist('product'), '.') if request.POST.getlist('product') else None
             start.save()
+            product = request.POST.getlist('product') if request.POST.getlist('product') else None
+            
+            if product:
+                start.product.clear()
+                for p in product:
+                    detail = Adr.objects.get(id=int(p))
+                    start.add_product(detail.id, detail.get_name())
+            
             return redirect('daytime')
         
     context['object'] = start
@@ -250,12 +308,12 @@ def modify_work(request, gender, id):
 def completed_work(request, gender, id):
     context = {
         'day': datetime.datetime.now(),
+        'gender': gender,
     }
     
     if gender == 'start':
         start = StartDaytime.objects.get(id=id)
         context['title'] = 'Terminer la journée'
-        context['object'] = start
         context['gender'] = 'start'
         
         if request.method == 'POST':
@@ -267,24 +325,53 @@ def completed_work(request, gender, id):
             start.save()
             return redirect('daytime')
     
+    if gender == 'factory':
+        start = FactoryDaytime.objects.get(id=id)
+        products = Adr.objects.all().order_by('onu')
+        list_product = [prod['id'] for prod in start.get_product()]
+        context['products'] = products
+        context['list_product'] = list_product
+        context['title'] = f'Terminer le travail chez {start.name}'
+        if request.method == 'POST':
+            start.start_work = datetime.datetime.strptime(request.POST.get('start_work'), '%H:%M') if request.POST.get('start_work') else None
+            start.end_work = datetime.datetime.strptime(request.POST.get('end_work'), '%H:%M') if request.POST.get('end_work') else None
+            start.hour_start = datetime.datetime.strptime(request.POST.get('hour_start'), '%H:%M') if request.POST.get('hour_start') else None
+            start.cmr = request.POST.get('cmr').upper() if request.POST.get('cmr') else None
+            start.command = request.POST.get('command').upper() if request.POST.get('command') else None
+            start.comment = request.POST.get('comment').capitalize() if request.POST.get('comment') else None
+            start.wheight = request.POST.get('wheight') if request.POST.get('wheight') else None
+            start.compled = True
+            start.save()
+            product = request.POST.getlist('product') if request.POST.getlist('product') else None
+            
+            if product:
+                start.product.clear()
+                for p in product:
+                    detail = Adr.objects.get(id=int(p))
+                    start.add_product(detail.id, detail.get_name())
+            
+            return redirect('daytime')
+    
     if gender == 'change':
-        change = ChangeDaytime.objects.get(id=id)
+        start = ChangeDaytime.objects.get(id=id)
         context['title'] = 'Terminer le changement'
-        context['object'] = change
+        context['object'] = start
         context['gender'] = 'change'
         last_start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
         
         if request.method == 'POST':
-            change.hour_start = datetime.datetime.strptime(request.POST.get('hour_start'), '%H:%M')
-            change.trailer = request.POST.get('trailer').upper()
-            change.condition = request.POST.get('condition')
-            change.lights = request.POST.get('lights')
-            change.tires = request.POST.get('tires')
-            change.wheight = True if int(request.POST.get('wheight')) else False
-            change.comment = request.POST.get('comment')
-            change.compled = True
-            change.save()
-            last_start.add_trailer(change.trailer)
+            start.hour_start = datetime.datetime.strptime(request.POST.get('hour_start'), '%H:%M')
+            start.trailer = request.POST.get('trailer').upper()
+            start.condition = request.POST.get('condition')
+            start.lights = request.POST.get('lights')
+            start.tires = request.POST.get('tires')
+            start.wheight = True if int(request.POST.get('wheight')) else False
+            start.comment = request.POST.get('comment')
+            start.compled = True
+            start.save()
+            last_start.add_trailer(start.trailer)
             return redirect('daytime')
+    
+    context['object'] = start
     
     return render(request, 'daytime/completed_work.html', context)

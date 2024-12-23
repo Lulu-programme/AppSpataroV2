@@ -16,8 +16,8 @@ class Adr(models.Model):
 
     def get_name(self):
         if self.nsa:
-            return f'{self.onu}, {self.name}, {self.nsa}'
-        return f'{self.onu}, {self.name}'
+            return f'{self.name}, {self.nsa}'
+        return f'{self.name}'
     
     def __str__(self):
         return self.get_name()

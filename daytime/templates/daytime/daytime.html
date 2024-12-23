@@ -58,12 +58,19 @@
         {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
         {% if halt.end_work %}<p>Fin de travail : {{ halt.end_work|time:'H\hi' }}</p>{% endif %}
         {% if halt.command %}<p>N° de commande : {{ halt.command }}</p>{% endif %}
-        {% if halt.product %}<p>Produit : {{ halt.product }}</p>{% endif %}
+        {% if halt.product %}
+        <p>Produit : 
+        {% for product in halt.product %}
+        <br/>{{ product.name }}.
+        {% endfor %}
+        </p>
+        {% endif %}
         {% if halt.wheight %}<p>Poids chargé : {{ halt.wheight }} Kg</p>{% endif %}
         {% if halt.km_arrival %}<p>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</p>{% endif %}
     </div>
     {% if halt.km_filled %}<h3>Kilomètre à charge : {{ halt.km_filled }} Km</h3>{% endif %}
     {% if halt.km_empty %}<h3>Kilomètre à vide : {{ halt.km_empty }} Km</h3>{% endif %}
+    {% if halt.compled %}<h3>Temps d'attente : {{ halt.total_wait }}</h3>{% endif %}
     {% if halt.comment %}<h3>Commentaire : {{ halt.comment }}</h3>{% endif %}
     {% if not halt.compled %}
     <div class="links">

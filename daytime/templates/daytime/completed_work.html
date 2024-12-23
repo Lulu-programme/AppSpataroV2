@@ -32,7 +32,82 @@
         <legend>Kilomètre de fin</legend>
         <input type='text' name='km_end' id='km_end' required>
     </fieldset>
-    <p class="submitted"><input type="submit" value="Valider"></p>
+    <p class="submitted"><input type="submit" value="Terminer"></p>
+</form>{% endif %}
+<!--   Factory daytime   -->
+{% if gender == 'factory' %}
+<form action="{% url 'completed-work' 'factory' object.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Début du travail</legend>
+        <input type='time' name='start_work' id='start_work' value="{% if object.start_work %}{{ object.start_work|time:'H:i' }}{% endif %}">
+    </fieldset>
+    <fieldset>
+        <legend>fin du travail</legend>
+        <input type='time' name='end_work' id='end_work' >
+    </fieldset>
+    <fieldset>
+        <legend>Numéro de cmr</legend>
+        {% if last_list_cmr %}
+        {% for cmr in last_list_cmr %}
+        <div>
+            <input type="checkbox" id="cmr" name="cmr" value="{{ cmr }}" />
+            <label for="cmr">{{ cmr }}</label>
+        </div>
+        {% endfor %}
+        {% else %}
+        {% if object.cmr %}
+        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ object.cmr}}</textarea>
+        {% elif last_cmr %}
+        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ last_cmr}}</textarea>
+        {% else %}
+        <textarea name='cmr' id='cmr' rows='10' cols='30'></textarea>
+        {% endif %}
+        <p class='helptext'>Si plusieurs cmrs : séparer les par un virgule et terminer par un point.</p>
+        {% endif %}
+    </fieldset>
+    <fieldset>
+        <legend>Numéro de référence</legend>
+        {% if last_list_command %}
+        {% for command in last_list_command %}
+        <div>
+            <input type="checkbox" id="command" name="command" value="{{ command }}" />
+            <label for="command">{{ command }}</label>
+        </div>
+        {% endfor %}
+        {% else %}
+        {% if object.command %}
+        <textarea name='command' id='command' rows='10' cols='30'>{{ object.command}}</textarea>
+        {% elif last_command %}
+        <textarea name='command' id='command' rows='10' cols='30'>{{ last_command}}</textarea>
+        {% else %}
+        <textarea name='command' id='command' rows='10' cols='30'></textarea>
+        {% endif %}
+        <p class='helptext'>Si plusieurs références : séparer les par un virgule et terminer par un point.</p>
+        {% endif %}
+    </fieldset>
+    <fieldset>
+        <legend>Produits</legend>
+        {% for product in products %}
+        <div>
+            <input type="checkbox" id="product" name="product" value="{{ product.id }}" {% if product.id in list_product %}checked{% endif %} />
+            <label for="product">{{ product.name }}-{{ product.nsa }}</label>
+        </div>
+        {% endfor %}
+    </fieldset>
+    <fieldset>
+        <legend>Poids chargé</legend>
+        <input type='number' id='wheight' name='wheight' >
+    </fieldset>
+    <fieldset>
+        <legend>Heure de départ</legend>
+        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Commentaire</legend>
+        <textarea name='comment' id='comment' rows='10' cols='30'></textarea>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Terminer"></p>
 </form>{% endif %}
 <!--   Change daytime   -->
 {% if gender == 'change' %}
@@ -102,6 +177,6 @@
         <legend>Infos supplémentaires</legend>
         <textarea name='comment' id='comment' rows='10' cols='30'></textarea>
     </fieldset>
-    <p class="submitted"><input type="submit" value="Valider"></p>
+    <p class="submitted"><input type="submit" value="Terminer"></p>
 </form>{% endif %}
 {% endblock content %}

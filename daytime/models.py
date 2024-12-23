@@ -63,7 +63,7 @@ class FactoryDaytime(models.Model):
     end_work = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     cmr = models.TextField(blank=True, null=True)
     command = models.TextField(blank=True, null=True)
-    product = models.TextField(blank=True, null=True)
+    product = models.JSONField(default=list, blank=True, null=True)
     wheight = models.IntegerField(blank=True, null=True)
     hour_start = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
@@ -82,6 +82,16 @@ class FactoryDaytime(models.Model):
         to_place = calculate_laps_time(self.hour_arrival.hour, self.hour_start.hour, self.hour_arrival.minute, self.hour_start.minute, False)
         to_work = calculate_laps_time(self.start_work.hour, self.end_work.hour, self.start_work.minute, self.end_work.minute, False)
         return convert_seconds(to_place - to_work, True)
+    
+    def add_product(self, product_id, product_type):
+        """
+        Ajoute un produit dans le champ JSONField `product`.
+        """
+        self.product.append({"id": product_id, "name": product_type})
+        self.save()
+    
+    def get_product(self):
+        return [product for product in self.product]
 
 
 class ChangeDaytime(models.Model):
