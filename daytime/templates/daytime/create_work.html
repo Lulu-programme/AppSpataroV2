@@ -13,68 +13,72 @@
 <form action="{% url 'create-work' 'start' %}" method="POST">
     {% csrf_token %}
     <fieldset>
-        <legend>Nom du chauffeur</legend>
-        <input type='text' name='name_driver' id='name_driver' value='{{ request.user.get_full_name }}' required>
-    </fieldset>
-    <fieldset>
         <legend>Camion</legend>
         {% for truck in trucks %}
         <div>
-            <input type="checkbox" id="truck" name="truck" value="{{ truck.license }}" {% if user_truck == truck.license %}checked{% endif %} />
+            <input type="radio" id="truck" name="truck" value="{{ truck.license }}" {% if user_truck == truck.license %}checked{% endif %} />
             <label for="truck">{{ truck.license }}</label>
         </div>
         {% endfor %}
     </fieldset>
+    {% if request.user.sector != 'Distribution' %}
     <fieldset>
         <legend>remorque</legend>
         <input type='text' name='trailer' id='trailer' {% if last_trailer %}value='{{ last_trailer }}'{% endif %} required>
+        <p class='required'>OBLIGATOIRE</p>
         <p class='helptext'>Si pas de remorque mettre solo.</p>
     </fieldset>
+    {% endif %}
     <fieldset>
         <legend>Secteur</legend>
         <div>
-            <input type="checkbox" id="sector" name="sector" value="Gaz" {% if request.user.sector == 'Gaz' %}checked{% endif %} />
+            <input type="radio" id="sector" name="sector" value="Gaz" {% if request.user.sector == 'Gaz' %}checked{% endif %} />
             <label for="sector">Gaz</label>
         </div>
         <div>
-            <input type="checkbox" id="sector" name="sector" value="Distribution" {% if request.user.sector == 'Distribution' %}checked{% endif %}/>
+            <input type="radio" id="sector" name="sector" value="Distribution" {% if request.user.sector == 'Distribution' %}checked{% endif %}/>
             <label for="sector">Distribution</label>
         </div>
         <div>
-            <input type="checkbox" id="sector" name="sector" value="Chimie" {% if request.user.sector == 'Chimie' %}checked{% endif %}/>
+            <input type="radio" id="sector" name="sector" value="Chimie" {% if request.user.sector == 'Chimie' %}checked{% endif %}/>
             <label for="sector">Chimie</label>
         </div>
     </fieldset>
     <fieldset>
         <legend>Lieux de départ</legend>
-        <input type='text' name='city_start' id='city_start' {% if object.city_end %}value='{{ object.city_end }}'{% endif %} required>
+        <input type='text' name='city_start' id='city_start' {% if last_user_compled %}value='{{ last_user_compled.city_end }}'{% endif %} required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Date de départ</legend>
-        <input type='date' name='date_start' id='date_start' value="{{ day|date:'Y-m-d' }}">
+        <input type='date' name='date_start' id='date_start' value="{{ day|date:'Y-m-d' }}" required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Heure de départ</legend>
-        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
+        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}" required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Kilomètre de départ</legend>
-        <input type='text' name='km_start' id='km_start' {% if object.km_end %}value='{{ object.km_end }}'{% endif %} required>
+        <input type='text' name='km_start' id='km_start' {% if last_user_compled %}value='{{ last_user_compled.km_end }}'{% endif %} required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
 </form>{% endif %}
-<!--   Factory daytime   -->
-{% if gender == 'factory' %}
-<form action="{% url 'create-work' 'factory' %}" method="POST">
+<!--   Change daytime   -->
+{% if gender == 'change' %}
+<form action="{% url 'create-work' 'change' %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Nom du client</legend>
         {% for factory in factorys %}
         <div>
-            <input type="radio" id="name" name="name" value="{{ factory.get_title }}" />
+            <input type="radio" id="name" name="name" value="{{ factory.get_title }}" required/>
             <label for="name">{{ factory.get_title }}</label>
         </div>
         {% endfor %}
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Heure d'arrivée</legend>
@@ -83,12 +87,38 @@
     <fieldset>
         <legend>Kilomètre d'arrivée</legend>
         <input type='text' name='km_arrival' id='km_arrival' required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
 </form>{% endif %}
-<!--   Change daytime   -->
-{% if gender == 'change' %}
-<form action="{% url 'create-work' 'change' %}" method="POST">
+<!--   Gasoil daytime   -->
+{% if gender == 'gasoil' %}
+<form action="{% url 'create-work' 'gasoil' %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Nom du client</legend>
+        {% for factory in factorys %}
+        <div>
+            <input type="radio" id="name" name="name" value="{{ factory.get_title }}" required/>
+            <label for="name">{{ factory.get_title }}</label>
+        </div>
+        {% endfor %}
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>Heure d'arrivée</legend>
+        <input type='time' name='hour_arrival' id='hour_arrival' value="{{ day|time:'H:i' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Kilomètre d'arrivée</legend>
+        <input type='text' name='km_arrival' id='km_arrival' required>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Commencer"></p>
+</form>{% endif %}
+<!--   Factory daytime   -->
+{% if gender == 'factory' %}
+<form action="{% url 'create-work' 'factory' %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Nom du client</legend>

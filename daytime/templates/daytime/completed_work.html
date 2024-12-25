@@ -3,40 +3,135 @@
 {% block content %}
 <div class="nav-content">
     <a href="{% url 'daytime' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
-    {% if start %}
-    <h1>{{ title }}{{ object.date_start }}</h1>
-    {% else %}
     <h1>{{ title }}</h1>
-    {% endif %}
 </div>
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
 <!--   Start daytime   -->
 {% if gender == 'start' %}
-<form action="{% url 'completed-work' 'start' object.id %}" method="POST">
+<form action="{% url 'completed-work' 'start' start.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Date de fin</legend>
         <input type='date' name='date_end' id='date_end' value="{{ day|date:'Y-m-d' }}" required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Lieux de fin</legend>
         <input type='text' name='city_end' id='city_end' required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Heure de fin</legend>
         <input type='time' name='hour_end' id='hour_end' value="{{ day|time:'H:i' }}" required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Kilomètre de fin</legend>
         <input type='text' name='km_end' id='km_end' required>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Terminer"></p>
+</form>{% endif %}
+<!--   Change daytime   -->
+{% if gender == 'change' %}
+<form action="{% url 'completed-work' 'change' change.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Immatriculation</legend>
+        <input type='text' name='trailer' id='trailer' required>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>État</legend>
+        <div>
+            <input type="radio" id="condition" name="condition" value="Bon état" required/>
+            <label for="condition">Bon état</label>
+        </div>
+        <div>
+            <input type="radio" id="condition" name="condition" value="Correct" required/>
+            <label for="condition">Correct</label>
+        </div>
+        <div>
+            <input type="radio" id="condition" name="condition" value="Mad Max" required/>
+            <label for="condition">Mad Max</label>
+        </div>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>Éclairages</legend>
+        <div>
+            <input type="radio" id="lights" name="lights" value="Bon état" required/>
+            <label for="lights">Bon état</label>
+        </div>
+        <div>
+            <input type="radio" id="lights" name="lights" value="À changer" required/>
+            <label for="lights">À changer</label>
+        </div>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>Pneus</legend>
+        <div>
+            <input type="radio" id="tires" name="tires" value="Bon état" required/>
+            <label for="tires">Bon état</label>
+        </div>
+        <div>
+            <input type="radio" id="tires" name="tires" value="Correct" required/>
+            <label for="tires">Correct</label>
+        </div>
+        <div>
+            <input type="radio" id="tires" name="tires" value="À changer" required/>
+            <label for="tires">À changer</label>
+        </div>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>Chargée</legend>
+        <div>
+            <input type="radio" id="wheight" name="wheight" value="1" required/>
+            <label for="wheight">Oui</label>
+        </div>
+        <div>
+            <input type="radio" id="wheight" name="wheight" value="0" required/>
+            <label for="wheight">Non</label>
+        </div>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>Heure de départ</legend>
+        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
+    </fieldset>
+    <fieldset>
+        <legend>Infos supplémentaires</legend>
+        <textarea name='comment' id='comment' rows='10' cols='30'></textarea>
+    </fieldset>
+    <p class="submitted"><input type="submit" value="Terminer"></p>
+</form>{% endif %}
+<!--   Change daytime   -->
+{% if gender == 'gasoil' %}
+<form action="{% url 'completed-work' 'gasoil' gasoil.id %}" method="POST">
+    {% csrf_token %}
+    <fieldset>
+        <legend>Diesel</legend>
+        <input type='number' name='diesel' id='diesel' required>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>AdBlue</legend>
+        <input type='number' name='adblue' id='adblue' required>
+        <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>Heure de départ</legend>
+        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
     </fieldset>
     <p class="submitted"><input type="submit" value="Terminer"></p>
 </form>{% endif %}
 <!--   Factory daytime   -->
 {% if gender == 'factory' %}
-<form action="{% url 'completed-work' 'factory' object.id %}" method="POST">
+<form action="{% url 'completed-work' 'factory' factory.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Début du travail</legend>
@@ -105,76 +200,6 @@
     </fieldset>
     <fieldset>
         <legend>Commentaire</legend>
-        <textarea name='comment' id='comment' rows='10' cols='30'></textarea>
-    </fieldset>
-    <p class="submitted"><input type="submit" value="Terminer"></p>
-</form>{% endif %}
-<!--   Change daytime   -->
-{% if gender == 'change' %}
-<form action="{% url 'completed-work' 'change' object.id %}" method="POST">
-    {% csrf_token %}
-    <fieldset>
-        <legend>Immatriculation</legend>
-        <input type='text' name='trailer' id='trailer' required>
-    </fieldset>
-    <fieldset>
-        <legend>État</legend>
-        <div>
-            <input type="radio" id="condition" name="condition" value="Bon état" />
-            <label for="condition">Bon état</label>
-        </div>
-        <div>
-            <input type="radio" id="condition" name="condition" value="Correct" />
-            <label for="condition">Correct</label>
-        </div>
-        <div>
-            <input type="radio" id="condition" name="condition" value="Mad Max" />
-            <label for="condition">Mad Max</label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Éclairages</legend>
-        <div>
-            <input type="radio" id="lights" name="lights" value="Bon état" />
-            <label for="lights">Bon état</label>
-        </div>
-        <div>
-            <input type="radio" id="lights" name="lights" value="À changer" />
-            <label for="lights">À changer</label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Pneus</legend>
-        <div>
-            <input type="radio" id="tires" name="tires" value="Bon état" />
-            <label for="tires">Bon état</label>
-        </div>
-        <div>
-            <input type="radio" id="tires" name="tires" value="Correct" />
-            <label for="tires">Correct</label>
-        </div>
-        <div>
-            <input type="radio" id="tires" name="tires" value="À changer" />
-            <label for="tires">À changer</label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Chargée</legend>
-        <div>
-            <input type="radio" id="wheight" name="wheight" value="1" />
-            <label for="wheight">Oui</label>
-        </div>
-        <div>
-            <input type="radio" id="wheight" name="wheight" value="0" />
-            <label for="wheight">Non</label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Heure de départ</legend>
-        <input type='time' name='hour_start' id='hour_start' value="{{ day|time:'H:i' }}">
-    </fieldset>
-    <fieldset>
-        <legend>Infos supplémentaires</legend>
         <textarea name='comment' id='comment' rows='10' cols='30'></textarea>
     </fieldset>
     <p class="submitted"><input type="submit" value="Terminer"></p>

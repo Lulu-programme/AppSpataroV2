@@ -1,8 +1,8 @@
 :root { --primary: #ff9a00; --secondary: #373737; --background: #f9f9f9; --text: #121212; --accent: #6a6a6a; }
 @font-face { font-family: 'spataro'; src: url(../fonts/Algerian.ttf); }
 @font-face { font-family: 'hack'; src: url(../fonts/Hack.ttf); }
-@font-face { font-family: 'lcd'; src: url(../fonts/Lcd.ttf); }
-@font-face { font-family: 'note'; src: url(../fonts/Note.ttf); }
+@font-face { font-family: 'lcd'; src: url(../fonts/lcd.ttf); }
+@font-face { font-family: 'note'; src: url(../fonts/Tomorrow-Regular.ttf); }
 @font-face { font-family: 'text'; src: url(../fonts/Ubuntu.ttf); }
 
 div.navbar{ background-color: var(--primary); display: flex; flex-direction: row; justify-content: space-around; align-items: center; }

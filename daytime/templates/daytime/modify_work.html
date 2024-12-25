@@ -12,48 +12,6 @@
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
-<!--   Start daytime   -->
-{% if gender == 'start' %}
-<form action="{% url 'modify-work' 'start' object.id %}" method="POST">
-    {% csrf_token %}
-    <fieldset>
-        <legend>Camion</legend>
-        {% for truck in trucks %}
-        <div>
-            <input type="checkbox" id="truck" name="truck" value="{{ truck.license }}" {% if truck.license in object.truck %}checked{% endif %} />
-            <label for="truck">{{ truck.license }}</label>
-        </div>
-        {% endfor %}
-    </fieldset>
-    <fieldset>
-        <legend>Secteur</legend>
-        <div>
-            <input type="checkbox" id="sector" name="sector" value="Gaz" {% if request.user.sector == 'Gaz' %}checked{% endif %} />
-            <label for="sector">Gaz</label>
-        </div>
-        <div>
-            <input type="checkbox" id="sector" name="sector" value="Distribution" {% if request.user.sector == 'Distribution' %}checked{% endif %}/>
-            <label for="sector">Distribution</label>
-        </div>
-        <div>
-            <input type="checkbox" id="sector" name="sector" value="Chimie" {% if request.user.sector == 'Chimie' %}checked{% endif %}/>
-            <label for="sector">Chimie</label>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Lieux de départ</legend>
-        <input type='text' name='city_start' id='city_start' value='{{ object.city_start }}' required>
-    </fieldset>
-    <fieldset>
-        <legend>Heure de départ</legend>
-        <input type='time' name='hour_start' id='hour_start' value="{{ object.hour_start|time:'H:i' }}">
-    </fieldset>
-    <fieldset>
-        <legend>Kilomètre de départ</legend>
-        <input type='text' name='km_start' id='km_start' value='{{ object.km_start }}' required>
-    </fieldset>
-    <p class="submitted"><input type="submit" value="Modification"></p>
-</form>{% endif %}
 <!--   Factory daytime   -->
 {% if gender == 'factory' %}
 <form action="{% url 'modify-work' 'factory' object.id %}" method="POST">

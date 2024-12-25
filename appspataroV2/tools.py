@@ -1,4 +1,5 @@
 import re
+import datetime
 
 
 sector_list = [
@@ -199,3 +200,11 @@ def validate_list(input_string):
     # Vérification pour plusieurs commandes séparées par des virgules
     if re.fullmatch(r'(\d+, )*\d+', content):
         return "+"
+
+
+def convert_date(date):
+    return datetime.datetime.strptime(date, '%Y-%m-%d') if date else None
+
+
+def convert_hour(hour):
+    return datetime.datetime.strptime(hour, '%H:%M') if hour else None

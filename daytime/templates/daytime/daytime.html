@@ -7,20 +7,21 @@
         {% if start.compled or not start%}
         <a href="{% url "create-work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
             <span class="laptop">Commencer la journée</span></a>{% else %}
-        <a href="{% url "create-work" 'factory' %}"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
+        {% if work_end %}<a href="{% url "create-work" 'factory' %}"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
             <span class="laptop">Ajouter un arrêt</span></a>
+        {% if start.trailer %}
         <a href="{% url "create-work" 'change' %}"><img src="{% static 'images/icons/trailer.png' %}" class="icon tablet-phone">
-            <span class="laptop">Changer de remorque</span></a>
+            <span class="laptop">Changer de remorque</span></a>{% endif %}
         <a href="{% url "create-work" 'gasoil' %}"><img src="{% static 'images/icons/add_fuel.png' %}" class="icon tablet-phone">
-            <span class="laptop">Ajouter du carburant</span></a>{% endif %}
+            <span class="laptop">Ajouter du carburant</span></a>{% endif %}{% endif %}
     </div>
 </div>
 {% if start %}
 <div class='start-day'>
-    <h2>{{ start.name_driver }} - {{ start.sector }}</h2>
+    {% if start.trailer %}<h2>{{ start.name_driver }} - {{ start.sector }}</h2>{% else %}<h2>{{ start.name_driver }}</h2>{% endif %}
     <div class="info">
         <p>Tracteur : {{ start.truck }}</p>
-        <p>Remorque : {{ start.trailer }}</p>
+        {% if start.trailer %}<p>Remorque : {{ start.trailer }}</p>{% else %}<p>Secteur : {{ start.sector }}{% endif %}
         <p>Lieux de départ : {{ start.city_start }}</p>
         <p>Date de départ : {{ start.date_start }}</p>
         <p>Heure de départ : {{ start.hour_start|time:'H\hi' }}</p>
@@ -28,8 +29,6 @@
     </div>
     {% if not start.compled %}
     <div class="links">
-        <p class="modify"><a href="{% url "modify-work" 'start' start.id %}">
-            <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
         <p><a href="{% url "completed-work" 'start' start.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
     </div>
@@ -95,11 +94,29 @@
 
     </div>
     {% if halt.km_arrival %}<h3>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</h3>{% endif %}
-    {% if halt.wheight %}<h3>Remorque chargée</h3>{% else %}<h3>Remorque vide</h3>{% endif %}
+    {% if halt.compled %}{% if halt.wheight %}<h3>Remorque chargée</h3>{% else %}<h3>Remorque vide</h3>{% endif %}{% endif %}
     {% if halt.comment %}<h3>Commentaire : <br/>{{ halt.comment }}</h3>{% endif %}
     {% if not halt.compled %}
     <div class="links">
         <p><a href="{% url "completed-work" 'change' halt.id %}">
+            <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
+    </div>{% endif %}
+</div>
+{% endif %}
+{% if halt.formel == 'gasoil' %}
+<div class='gasoil-day'>
+    <h1>{{ halt.name }}</h1>
+    <div class='info'>
+        {% if halt.hour_arrival %}<p>Heure d'arrivé : {{ halt.hour_arrival|time:'H\hi' }}</p>{% endif %}
+        {% if halt.diesel %}<p>Diesel : {{ halt.diesel }} L</p>{% endif %}
+        {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
+        {% if halt.adblue %}<p>AdBlue : {{ halt.adblue }} L</p>{% endif %}
+
+    </div>
+    {% if halt.km_arrival %}<h3>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</h3>{% endif %}
+    {% if not halt.compled %}
+    <div class="links">
+        <p><a href="{% url "completed-work" 'gasoil' halt.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
     </div>{% endif %}
 </div>

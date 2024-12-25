@@ -5,7 +5,7 @@ from appspataroV2.tools import calculate_laps_time, convert_seconds
 class StartDaytime(models.Model):
     name_driver = models.CharField(max_length=100)
     truck = models.CharField(max_length=100)
-    trailer = models.CharField(max_length=100)
+    trailer = models.CharField(max_length=100, blank=True, null=True)
     sector = models.CharField(max_length=100)
     city_start = models.CharField(max_length=100)
     date_start = models.DateField(auto_now=False, auto_now_add=False)
@@ -15,7 +15,7 @@ class StartDaytime(models.Model):
     date_end = models.DateField(auto_now=False, auto_now_add=False, blank=True, null=True)
     hour_end = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     km_end = models.IntegerField(blank=True, null=True)
-    work = models.JSONField(default=list)
+    work = models.JSONField(default=list, blank=True, null=True)
     last_loading = models.BooleanField(default=False)
     compled = models.BooleanField(default=False)
     formel = models.CharField(default='start', max_length=50)
@@ -33,7 +33,6 @@ class StartDaytime(models.Model):
 
     def total_hours(self):
         return calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, True)
-
     
     def add_work(self, work_id, work_type):
         """
@@ -52,8 +51,17 @@ class StartDaytime(models.Model):
         return [work for work in self.work]
     
     def add_trailer(self, new_trailer):
-        self.trailer = f'{self.trailer[:-1].strip()} - {new_trailer}.'
+        if self.trailer[-1] == '.':
+            self.trailer = f'{self.trailer[:-1].strip()}, {new_trailer}.'
+        else:
+            self.trailer = f'{self.trailer}, {new_trailer}.'
         self.save()
+        
+    def last_load(self):
+        if self.last_loading:
+            self.last_loading = False
+        else:
+            self.last_loading = True
 
 
 class FactoryDaytime(models.Model):
