@@ -27,7 +27,7 @@ class Adr(models.Model):
 
     def labels_change(self):
         list_labels = []
-        labels = change_text_to_list(self.labels, '-')
+        labels = change_text_to_list(self.labels, ',', '-', False)
         for label in labels:
             if '.' in label:
                 change_labels = label
@@ -44,7 +44,7 @@ class Adr(models.Model):
 
     def labels_list(self):
         labels_list = []
-        labels = change_text_to_list(self.labels, '-')
+        labels = change_text_to_list(self.labels, ',', '-', False)
         for label in labels:
             if not label.lower() == 'environnement' and not label.lower() == 'température':
                 labels_list.append(label)

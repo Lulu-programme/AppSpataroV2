@@ -46,8 +46,12 @@ def create_work(request, gender):
     
     if gender == 'start':
         start = StartDaytime.objects.all()
+        object = start.last()
+        trailer = change_text_to_list(object.trailer, '-', '.', False)
+        last_trailer = trailer[-1].upper()
         context['title'] = 'Commencer la journée'
-        context['object'] = StartDaytime.objects.last()
+        context['object'] = object
+        context['last_trailer'] = last_trailer
         if request.method == 'POST':
             name_driver = request.user.get_full_name() 
             truck = request.POST.getlist('truck')
@@ -76,9 +80,9 @@ def create_work(request, gender):
         
     if gender == 'factory':
         start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
-        start_list = change_text_to_list(start.sector, '.', False)
+        start_list = change_text_to_list(start.sector, ',', '.', False)
         factorys = sorted(
-            [fac for fac in Factory.objects.all() if any(i in change_text_to_list(fac.sector, '.', False) for i in start_list)],
+            [fac for fac in Factory.objects.all() if any(i in change_text_to_list(fac.sector, ',', '.', False) for i in start_list)],
             key=lambda x: x.name  # Trie par le champ 'name' ou autre critère
         )
         form = FactoryDaytime.objects.all()
@@ -98,31 +102,55 @@ def create_work(request, gender):
                 return render(request, 'daytime/create_work.html', context)
 
             # Retrouver la dernière remorque chargée ou vide
-            start_last = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).order_by('-id')
+            last_load = StartDaytime.objects.filter(name_driver=request.user.get_full_name(), last_load=True).exists()
             last_km = None
-            filled = None
 
-            for entry in start_last:
-                if last_km is not None:  # On arrête la recherche dès que `last_km` a une valeur
-                    break
+            if last_load:
+                
+                entry_load = StartDaytime.objects.get(name_driver=request.user.get_full_name(), last_load=True)
+                same_day = entry_load.date_start == start.date_start
+                
+                no_filled = 0
+                no_cmr = True
+                nb_cmr = 0
 
-                if entry.work:  # Vérifie que `work` n'est pas vide ou None
-                    for w in reversed(entry.work):  # Parcours inverse de `work`
+                if same_day:  # Vérifie que c'est le même jour
+                    entry = entry_load.work
+                else:
+                    entry = start.work
+                    no_cmr = False
+                    for index, work in enumerate(entry_load.work, start=1):
                         try:
-                            if w.get('type') == 'factory':
-                                fact = FactoryDaytime.objects.get(id=w.get('id'))
-                                last_km = fact.km_arrival
-                                filled = bool(fact.wheight)
-                                break
-                            elif w.get('type') == 'change':
-                                change = ChangeDaytime.objects.get(id=w.get('id'))
-                                last_km = change.km_arrival
-                                filled = bool(change.wheight)  # Boolean déjà dans la table
-                                break
+                            if work.get('type') == 'factory':
+                                fact = FactoryDaytime.objects.get(id=work.get('id'))
+                                if fact.wheight:
+                                    nb_cmr = len(change_text_to_list(fact.cmr, ',', '.', False))
+                                    no_filled = index
                         except FactoryDaytime.DoesNotExist:
                             context['error'] = f"FactoryDaytime introuvable pour ID {w.get('id')}."
-                        except ChangeDaytime.DoesNotExist:
-                            context['error'] = f"ChangeDaytime introuvable pour ID {w.get('id')}."
+                    
+                for w in reversed(entry):  # Parcours inverse de `work`
+                    try:
+                        if w.get('type') == 'factory':
+                            fact = FactoryDaytime.objects.get(id=w.get('id'))
+                            if fact.wheight:
+                                if no_cmr:
+                                    nb_cmr = len(change_text_to_list(fact.cmr, ',', '.', False))
+                                if nb_cmr == no_filled:
+                                    last_km = fact.km_arrival
+                                else:
+                                    last_km = fact.km_arrival
+                                break
+                            else:
+                                no_filled += 1
+                        elif w.get('type') == 'change':
+                            change = ChangeDaytime.objects.get(id=w.get('id'))
+                            last_km = change.km_arrival
+                            break
+                    except FactoryDaytime.DoesNotExist:
+                        context['error'] = f"FactoryDaytime introuvable pour ID {w.get('id')}."
+                    except ChangeDaytime.DoesNotExist:
+                        context['error'] = f"ChangeDaytime introuvable pour ID {w.get('id')}."
 
             # Calcul des distances
             km_empty = 0
@@ -136,7 +164,7 @@ def create_work(request, gender):
 
             # Calcul des distances
             if last_km is not None:  # Si last_km est défini
-                if filled:
+                if last_load:
                     km_filled = km_arrival - last_km
                 else:
                     km_empty = km_arrival - last_km
@@ -167,7 +195,7 @@ def create_work(request, gender):
     
     if gender == 'change':
         factorys = sorted(
-            [fac for fac in Factory.objects.all() if 'Parking' in change_text_to_list(fac.sector, '.')],
+            [fac for fac in Factory.objects.all() if 'Parking' in change_text_to_list(fac.sector, ',', '.', False)],
             key=lambda x: x.name  # Trie par le champ 'name' ou autre critère
         )
         start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
@@ -216,7 +244,7 @@ def modify_work(request, gender, id):
     if gender == 'start':
         start = StartDaytime.objects.get(id=id)
         context['title'] = 'Modification du '
-        context['user_truck'] = change_text_to_list(start.truck, '.')
+        context['user_truck'] = change_text_to_list(start.truck, ',', '.', False)
         context['start'] = True
         if request.method == 'POST':
             start.truck = change_list_to_text(request.POST.getlist('truck'), '.')
@@ -246,6 +274,9 @@ def modify_work(request, gender, id):
         for index, entry in enumerate(start_last):
             if filled is not None or index >= max_iterations:
                 break
+            
+            no_filled = 0
+            nb_cmr = 0
 
             if entry.work:  # Vérifie que `work` n'est pas vide ou None
                 for w in reversed(entry.work):  # Parcours inverse de `work`
@@ -253,21 +284,30 @@ def modify_work(request, gender, id):
                         if w.get('type') == 'factory':
                             fact = FactoryDaytime.objects.get(id=w.get('id'))
                             if fact.wheight:
-                                filled = True
-                                list_product = [prod['id'] for prod in fact.get_product()]
-                                # Validation et traitement des CMR
-                                if validate_list(fact.cmr) == '1':
-                                    last_cmr = fact.cmr
-                                elif validate_list(fact.cmr) == '+':
-                                    last_list_cmr = change_text_to_list(fact.cmr, '.', False)
+                                nb_cmr = len(change_text_to_list(fact.cmr, ',', '.', False))
                                 
-                                # Validation et traitement des commandes
-                                if validate_list(fact.command) == '1':
-                                    last_command = fact.command
-                                elif validate_list(fact.command) == '+':
-                                    last_list_command = change_text_to_list(fact.command, '.', False)
-                                
-                                break  # Sort de la boucle dès qu'une remorque remplie est trouvée
+                                # Vérification du nombre de déchargement par rapport au nombre de cmr.
+                                if nb_cmr == no_filled:
+                                    break
+                                elif nb_cmr > no_filled:
+                                    filled = True
+                                    list_product = [prod['id'] for prod in fact.get_product()]
+                                    
+                                    # Validation et traitement des CMR
+                                    if validate_list(fact.cmr) == '1':
+                                        last_cmr = fact.cmr
+                                    elif validate_list(fact.cmr) == '+':
+                                        last_list_cmr = change_text_to_list(fact.cmr, ',', '.', False)
+                                    
+                                    # Validation et traitement des commandes
+                                    if validate_list(fact.command) == '1':
+                                        last_command = fact.command
+                                    elif validate_list(fact.command) == '+':
+                                        last_list_command = change_text_to_list(fact.command, ',', '.', False)
+                                    
+                                    break  # Sort de la boucle dès qu'une remorque remplie est trouvée
+                            else:
+                                no_filled += 1
                     except FactoryDaytime.DoesNotExist:
                         context.setdefault('errors', []).append(f"FactoryDaytime introuvable pour ID {w.get('id')}.")
                     except ChangeDaytime.DoesNotExist:
@@ -330,8 +370,72 @@ def completed_work(request, gender, id):
         products = Adr.objects.all().order_by('onu')
         list_product = [prod['id'] for prod in start.get_product()]
         context['products'] = products
-        context['list_product'] = list_product
         context['title'] = f'Terminer le travail chez {start.name}'
+        
+        # Retrouver la dernière remorque chargée ou vide pour récupérer le/les cmr et commande
+        start_last = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).order_by('-id')
+        last_cmr = None
+        last_command = None
+        last_list_cmr = None
+        last_list_command = None
+        filled = None
+
+        max_iterations = 2  # Limite à 2 éléments
+        for index, entry in enumerate(start_last):
+            if filled is not None or index >= max_iterations:
+                break
+            
+            no_filled = 0
+            nb_cmr = 0
+
+            if entry.work:  # Vérifie que `work` n'est pas vide ou None
+                for w in reversed(entry.work):  # Parcours inverse de `work`
+                    try:
+                        if w.get('type') == 'factory':
+                            fact = FactoryDaytime.objects.get(id=w.get('id'))
+                            if fact.wheight:
+                                nb_cmr = len(change_text_to_list(fact.cmr, ',', '.', False))
+                                
+                                # Vérification du nombre de déchargement par rapport au nombre de cmr.
+                                if nb_cmr == no_filled:
+                                    break
+                                elif nb_cmr > no_filled:
+                                    filled = True
+                                    list_product = [prod['id'] for prod in fact.get_product()]
+                                    
+                                    # Validation et traitement des CMR
+                                    if validate_list(fact.cmr) == '1':
+                                        last_cmr = fact.cmr
+                                    elif validate_list(fact.cmr) == '+':
+                                        last_list_cmr = change_text_to_list(fact.cmr, ',', '.', False)
+                                    
+                                    # Validation et traitement des commandes
+                                    if validate_list(fact.command) == '1':
+                                        last_command = fact.command
+                                    elif validate_list(fact.command) == '+':
+                                        last_list_command = change_text_to_list(fact.command, ',', '.', False)
+                                    
+                                    break  # Sort de la boucle dès qu'une remorque remplie est trouvée
+                            else:
+                                no_filled += 1
+                    except FactoryDaytime.DoesNotExist:
+                        context.setdefault('errors', []).append(f"FactoryDaytime introuvable pour ID {w.get('id')}.")
+                    except ChangeDaytime.DoesNotExist:
+                        context.setdefault('errors', []).append(f"ChangeDaytime introuvable pour ID {w.get('id')}.")
+                        
+        # Ajouter les résultats au contexte
+        if filled:
+            context['last_cmr'] = last_cmr
+            context['last_command'] = last_command
+            context['last_list_cmr'] = last_list_cmr
+            context['last_list_command'] = last_list_command
+        else:
+            context['last_cmr'] = None
+            context['last_command'] = None
+            context['last_list_cmr'] = None
+            context['last_list_command'] = None
+
+        context['list_product'] = list_product
         if request.method == 'POST':
             start.start_work = datetime.datetime.strptime(request.POST.get('start_work'), '%H:%M') if request.POST.get('start_work') else None
             start.end_work = datetime.datetime.strptime(request.POST.get('end_work'), '%H:%M') if request.POST.get('end_work') else None

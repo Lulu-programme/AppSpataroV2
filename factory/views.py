@@ -124,9 +124,9 @@ def modify_factory(request, id):
         'language_list': language_list,
         'reception_list': reception_list,
         'factory': factory,
-        'sector_use': change_text_to_list(factory.sector, '.'),
-        'language_use': change_text_to_list(factory.language, '.'),
-        'provision_use': change_text_to_list(factory.provision, '.'),
+        'sector_use': change_text_to_list(factory.sector, ',', '.', False),
+        'language_use': change_text_to_list(factory.language, ',', '.', False),
+        'provision_use': change_text_to_list(factory.provision, ',', '.', False),
     }
     if request.method == 'POST':
         try:

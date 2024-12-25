@@ -16,6 +16,7 @@ class StartDaytime(models.Model):
     hour_end = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     km_end = models.IntegerField(blank=True, null=True)
     work = models.JSONField(default=list)
+    last_loading = models.BooleanField(default=False)
     compled = models.BooleanField(default=False)
     formel = models.CharField(default='start', max_length=50)
 
@@ -51,7 +52,7 @@ class StartDaytime(models.Model):
         return [work for work in self.work]
     
     def add_trailer(self, new_trailer):
-        self.trailer = f'{self.trailer} - {new_trailer}'
+        self.trailer = f'{self.trailer[:-1].strip()} - {new_trailer}.'
         self.save()
 
 

@@ -72,7 +72,7 @@ def modify_product(request, id):
         'title': 'Ajouter un produit',
         'labels_list': labels_list,
         'product': product,
-        'list_labels': change_text_to_list(product.labels, '-')
+        'list_labels': change_text_to_list(product.labels, ',', '-', False)
     }
     if request.method == 'POST':
         try:

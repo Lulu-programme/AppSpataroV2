@@ -138,11 +138,11 @@ def description_p(description):
     return formatted
 
 
-def change_text_to_list(to_change, final, number):
+def change_text_to_list(to_change, cute, final, number):
     changed = []
     last_modified = 0
     for i in range(len(to_change)):
-        if to_change[i] == ',' or to_change[i] == final:
+        if to_change[i] == cute or to_change[i] == final:
             if number:
                 change = int(to_change[last_modified:i])
             else:

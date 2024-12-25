@@ -27,7 +27,7 @@
     </fieldset>
     <fieldset>
         <legend>remorque</legend>
-        <input type='text' name='trailer' id='trailer' {% if object.trailer %}value='{{ object.trailer }}'{% endif %} required>
+        <input type='text' name='trailer' id='trailer' {% if last_trailer %}value='{{ last_trailer }}'{% endif %} required>
         <p class='helptext'>Si pas de remorque mettre solo.</p>
     </fieldset>
     <fieldset>
