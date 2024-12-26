@@ -69,7 +69,7 @@
         {% if halt.km_arrival %}<p>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</p>{% endif %}
     </div>
     {% if halt.km_filled %}<h3>Kilomètre à charge : {{ halt.km_filled }} Km</h3>{% endif %}
-    {% if halt.km_empty %}<h3>Kilomètre à vide : {{ halt.km_empty }} Km</h3>{% endif %}
+    {% if halt.km_emptied %}<h3>Kilomètre à vide : {{ halt.km_emptied }} Km</h3>{% endif %}
     {% if halt.compled %}<h3>Temps d'attente : {{ halt.total_wait }}</h3>{% endif %}
     {% if halt.comment %}<h3>Commentaire : {{ halt.comment }}</h3>{% endif %}
     {% if not halt.compled %}

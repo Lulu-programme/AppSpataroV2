@@ -189,6 +189,149 @@ def create_work(request, gender):
                 error = GoogleTranslator(source='auto', target='fr').translate(str(e))
                 context['error'] = error
     
+    if gender == 'factory':
+        
+        # Importation de la classe ChangeDaytime pour la création de l'entrée
+        form = FactoryDaytime.objects.all()
+        
+        # Récupérer les infos nécéssaires et les transmètres
+        factorys = sorted(
+            [
+                fac for fac in Factory.objects.all() if str(start.sector) in change_text_to_list(fac.sector, ',', '.', False)
+            ],
+            key=lambda x: x.name
+        )
+        context['factorys'] = factorys
+        context['title'] = 'Commencer un arrêt'
+        
+        if request.method == 'POST':
+            
+            # Récupération des données du formulaire
+            name = request.POST.get('name')
+            hour_arrival = convert_hour(request.POST.get('hour_arrival'))
+            km_arrival = int(request.POST.get('km_arrival'))
+            
+            # Retrouver le dernier camion ou remorque chargée ou vide, pour avoir les kilomètres à vide ou à charge
+            last_fill = None
+            last_empty = None
+            km_fill = None
+            km_empty = None
+            
+            if start_full:
+                for full in reversed(start_full):
+                    if start.sector == 'Distribution':
+                        if full.truck == start.truck:
+                            if full.last_loading:
+                                last_fill = full
+                                break
+                            else:
+                                if full.work:
+                                    for work in full.work:
+                                        if work.get('type') == 'factory':
+                                            last_empty = full
+                                            break
+                    else:
+                        trailer_user = change_text_to_list(start.trailer, ',', '.', False)
+                        if trailer_user[-1] in change_text_to_list(full.trailer, ',', '.', False):
+                            if full.last_loading:
+                                last_fill = full
+                                break
+                            else:
+                                if full.work:
+                                    for work in full.work:
+                                        if 'change' == work.get('type') == 'factory':
+                                            last_empty = full
+                                            break
+            
+            if last_fill or last_empty:
+                if last_empty:
+                    for work in reversed(last_empty.work):
+                        if start.sector == 'Distribution':
+                            if work.get('type') == 'factory':
+                                fact = FactoryDaytime.objects.get(id=work.get('id'))
+                                km_empty = fact.km_arrival
+                                break
+                        else:
+                            if work.get('type') == 'factory':
+                                fact = FactoryDaytime.objects.get(id=work.get('id'))
+                                km_empty = fact.km_arrival
+                                break
+                            if work.get('type') == 'change':
+                                fact = ChangeDaytime.objects.get(id=work.get('id'))
+                                km_empty = fact.km_arrival
+                                break
+                if last_fill:
+                    for work in reversed(last_fill.work):
+                        if start.sector == 'Distribution':
+                            if work.get('type') == 'factory':
+                                fact = FactoryDaytime.objects.get(id=work.get('id'))
+                                km_fill = fact.km_arrival
+                                break
+                        else:
+                            if work.get('type') == 'factory':
+                                fact = FactoryDaytime.objects.get(id=work.get('id'))
+                                km_fill = fact.km_arrival
+                                break
+                            if work.get('type') == 'change':
+                                fact = ChangeDaytime.objects.get(id=work.get('id'))
+                                km_fill = fact.km_arrival
+                                break
+            else:
+                for work in reversed(start.work):
+                    if start.sector == 'Distribution':
+                        if work.get('type') == 'factory':
+                            fact = FactoryDaytime.objects.get(id=work.get('id'))
+                            if fact.wheight:
+                                km_fill = fact.km_arrival
+                            else:
+                                km_empty = fact.km_arrival
+                            break
+                    else:
+                        if work.get('type') == 'factory':
+                            fact = FactoryDaytime.objects.get(id=work.get('id'))
+                            if fact.wheight:
+                                km_fill = fact.km_arrival
+                            else:
+                                km_empty = fact.km_arrival
+                            break
+                        if work.get('type') == 'change':
+                            fact = ChangeDaytime.objects.get(id=work.get('id'))
+                            if fact.wheight:
+                                km_fill = fact.km_arrival
+                            else:
+                                km_empty = fact.km_arrival
+                            break
+            
+            # Comparer les kilomètres à charge et à vide pour les enregistrer dans l'entrée de la classe
+            empty = 0
+            fill = 0
+            
+            if km_empty:
+                empty = km_arrival - km_empty
+            if km_fill:
+                fill = km_arrival - km_fill
+            
+            try:
+                
+                # Création de l'entrée
+                form.create(
+                    name=name,
+                    hour_arrival=hour_arrival,
+                    km_arrival=km_arrival,
+                    km_filled=fill,
+                    km_emptied=empty,
+                )
+                
+                # Ajouter le dernier changement au travail de la journée du chauffeur
+                last = FactoryDaytime.objects.last()
+                start.add_work(last.id, last.formel)
+                
+                return redirect('daytime')
+                
+            except Exception as e:
+                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
+                context['error'] = error
+    
     return render(request, 'daytime/create_work.html', context)
 
 def modify_work(request, gender, id):
@@ -249,6 +392,9 @@ def completed_work(request, gender, id):
                 
                 # Ajouter la nouvelle remorque dans la liste des de remorques de la journée
                 start.add_trailer(trailer)
+                
+                # Ajouter que la journée à un chargement
+                start.last_load(wheight)
                 
                 return redirect('daytime')
             except Exception as e:

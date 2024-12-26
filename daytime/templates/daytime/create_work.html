@@ -61,7 +61,7 @@
     </fieldset>
     <fieldset>
         <legend>Kilomètre de départ</legend>
-        <input type='text' name='km_start' id='km_start' {% if last_user_compled %}value='{{ last_user_compled.km_end }}'{% endif %} required>
+        <input type='number' name='km_start' id='km_start' {% if last_user_compled %}value='{{ last_user_compled.km_end }}'{% endif %} required>
         <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
@@ -86,7 +86,7 @@
     </fieldset>
     <fieldset>
         <legend>Kilomètre d'arrivée</legend>
-        <input type='text' name='km_arrival' id='km_arrival' required>
+        <input type='number' name='km_arrival' id='km_arrival' required>
         <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
@@ -111,7 +111,7 @@
     </fieldset>
     <fieldset>
         <legend>Kilomètre d'arrivée</legend>
-        <input type='text' name='km_arrival' id='km_arrival' required>
+        <input type='number' name='km_arrival' id='km_arrival' required>
         <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
@@ -128,6 +128,7 @@
             <label for="name">{{ factory.get_title }}</label>
         </div>
         {% endfor %}
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
         <legend>Heure d'arrivée</legend>
@@ -135,7 +136,8 @@
     </fieldset>
     <fieldset>
         <legend>Kilomètre d'arrivée</legend>
-        <input type='text' name='km_arrival' id='km_arrival' required>
+        <input type='number' name='km_arrival' id='km_arrival' required>
+        <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
 </form>{% endif %}

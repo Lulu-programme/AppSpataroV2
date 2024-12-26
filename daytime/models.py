@@ -57,11 +57,8 @@ class StartDaytime(models.Model):
             self.trailer = f'{self.trailer}, {new_trailer}.'
         self.save()
         
-    def last_load(self):
-        if self.last_loading:
-            self.last_loading = False
-        else:
-            self.last_loading = True
+    def last_load(self, load):
+        self.last_loading = load
 
 
 class FactoryDaytime(models.Model):
@@ -77,7 +74,7 @@ class FactoryDaytime(models.Model):
     hour_start = models.TimeField(auto_now=False, auto_now_add=False, blank=True, null=True)
     comment = models.TextField(blank=True, null=True)
     km_filled = models.IntegerField(blank=True, null=True)
-    km_empty = models.IntegerField(blank=True, null=True)
+    km_emptied = models.IntegerField(blank=True, null=True)
     compled = models.BooleanField(default=False)
     formel = models.CharField(default='factory', max_length=50)
 

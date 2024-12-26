@@ -10,7 +10,7 @@ from deep_translator import GoogleTranslator
 @login_required
 def profil(request):
     # Récupérer les données
-    trucks_list = Truck.objects.all()
+    trucks_list = Truck.objects.all().order_by('license')
     drivers_list = Account.objects.filter(is_superuser=False).order_by('last_name')
 
     # Pagination : 10 éléments par page
