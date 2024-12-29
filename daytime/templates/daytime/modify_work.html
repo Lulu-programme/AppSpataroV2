@@ -3,18 +3,12 @@
 {% block content %}
 <div class="nav-content">
     <a href="{% url 'daytime' %}"><img src="{% static 'images/icons/return.png' %}" class="icon"></a>
-    {% if start %}
-    <h1>{{ title }}{{ object.date_start }}</h1>
-    {% else %}
     <h1>{{ title }}</h1>
-    {% endif %}
 </div>
 {% if error %}
 <h2 class="error">{{ error }}</h2>
 {% endif %}
-<!--   Factory daytime   -->
-{% if gender == 'factory' %}
-<form action="{% url 'modify-work' 'factory' object.id %}" method="POST">
+<form action="{% url 'modify-work' object.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Début du travail</legend>
@@ -31,11 +25,11 @@
         {% endfor %}
         {% else %}
         {% if object.cmr %}
-        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ object.cmr}}</textarea>
+        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ object.cmr }}</textarea>
         {% elif last_cmr %}
-        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ last_cmr}}</textarea>
+        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ last_cmr }}</textarea>
         {% else %}
-        <textarea name='cmr' id='cmr' rows='10' cols='30'></textarea>
+        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ cmr }}</textarea>
         {% endif %}
         <p class='helptext'>Si plusieurs cmrs : séparer les par un virgule et terminer par un point.</p>
         {% endif %}
@@ -51,11 +45,11 @@
         {% endfor %}
         {% else %}
         {% if object.command %}
-        <textarea name='command' id='command' rows='10' cols='30'>{{ object.command}}</textarea>
+        <textarea name='command' id='command' rows='10' cols='30'>{{ object.command }}</textarea>
         {% elif last_command %}
-        <textarea name='command' id='command' rows='10' cols='30'>{{ last_command}}</textarea>
+        <textarea name='command' id='command' rows='10' cols='30'>{{ last_command }}</textarea>
         {% else %}
-        <textarea name='command' id='command' rows='10' cols='30'></textarea>
+        <textarea name='command' id='command' rows='10' cols='30'>{{ command }}</textarea>
         {% endif %}
         <p class='helptext'>Si plusieurs références : séparer les par un virgule et terminer par un point.</p>
         {% endif %}
@@ -65,10 +59,10 @@
         {% for product in products %}
         <div>
             <input type="checkbox" id="product" name="product" value="{{ product.id }}" {% if product.id in list_product %}checked{% endif %} />
-            <label for="product">{{ product.name }}-{{ product.nsa }}</label>
+            <label for="product">{{ product.get_name }}</label>
         </div>
         {% endfor %}
     </fieldset>
     <p class="submitted"><input type="submit" value="Modification"></p>
-</form>{% endif %}
+</form>
 {% endblock content %}

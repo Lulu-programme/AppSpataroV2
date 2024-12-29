@@ -135,7 +135,7 @@
     {% csrf_token %}
     <fieldset>
         <legend>Début du travail</legend>
-        <input type='time' name='start_work' id='start_work' value="{% if object.start_work %}{{ object.start_work|time:'H:i' }}{% endif %}">
+        <input type='time' name='start_work' id='start_work' value="{% if factory.start_work %}{{ factory.start_work|time:'H:i' }}{% endif %}">
     </fieldset>
     <fieldset>
         <legend>fin du travail</legend>
@@ -151,8 +151,8 @@
         </div>
         {% endfor %}
         {% else %}
-        {% if object.cmr %}
-        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ object.cmr}}</textarea>
+        {% if factory.cmr %}
+        <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ factory.cmr}}</textarea>
         {% elif last_cmr %}
         <textarea name='cmr' id='cmr' rows='10' cols='30'>{{ last_cmr}}</textarea>
         {% else %}
@@ -171,8 +171,8 @@
         </div>
         {% endfor %}
         {% else %}
-        {% if object.command %}
-        <textarea name='command' id='command' rows='10' cols='30'>{{ object.command}}</textarea>
+        {% if factory.command %}
+        <textarea name='command' id='command' rows='10' cols='30'>{{ factory.command}}</textarea>
         {% elif last_command %}
         <textarea name='command' id='command' rows='10' cols='30'>{{ last_command}}</textarea>
         {% else %}

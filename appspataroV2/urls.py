@@ -50,9 +50,9 @@ urlpatterns = [
     path('delete-restore/<int:id>/', adr.views.delete_restore, name='delete-restore'),
     # daytime page
     path('daytime/', daytime.views.daytime, name='daytime'),
-    path('create-work/<str:gender>/', daytime.views.create_work, name='create-work'),
-    path('modify-work/<str:gender>/<int:id>/', daytime.views.modify_work, name='modify-work'),
-    path('completed-work/<str:gender>/<int:id>/', daytime.views.completed_work, name='completed-work'),
+    path('create-work/<str:work_type>/', daytime.views.create_work, name='create-work'),
+    path('modify-work/<int:id>/', daytime.views.modify_work, name='modify-work'),
+    path('completed-work/<str:work_type>/<int:id>/', daytime.views.completed_work, name='completed-work'),
 ] 
 
 if settings.DEBUG:

@@ -12,421 +12,167 @@ def daytime(request):
     context = {
         'title': day,
     }
-    if StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last():
-        start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
+    last_start = StartDaytime.objects.filter(driver_name=request.user.get_full_name()).last()
+    
+    if last_start:
         work_list = []
         work_end = True
-        for work in start.work:
+
+        for work in last_start.work:
             work_type = work.get('type')
             work_id = work.get('id')
+            
+            detail = None
             if work_type == 'factory':
-                detail = FactoryDaytime.objects.get(id=work_id)
+                detail = FactoryDaytime.objects.filter(id=work_id).first()
             elif work_type == 'change':
-                detail = ChangeDaytime.objects.get(id=work_id)
+                detail = ChangeDaytime.objects.filter(id=work_id).first()
             elif work_type == 'gasoil':
-                detail = GasoilDaytime.objects.get(id=work_id)
-            else:
-                detail = None
-                
+                detail = GasoilDaytime.objects.filter(id=work_id).first()
+            
             if detail:
                 work_list.append(detail)
-                work_end = True if detail.compled else False
-                
+                work_end = work_end and detail.completed  # Vérifie si tous les travaux sont terminés
         
-        context['start'] = start
-        context['halts'] = work_list
-        context['work_end'] = work_end
-        context['dislodge'] = False if start.city_end == request.user.city else True
+        context.update({
+            'start': last_start,
+            'halts': work_list,
+            'work_end': work_end,
+            'dislodge': last_start.city_end != request.user.city,
+        })
     
     return render(request, 'daytime/daytime.html', context)
 
-def create_work(request, gender):
-    
-    start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
-    
-    try:
-        start_full = StartDaytime.objects.filter(compled=True).all()
-    except StartDaytime.objects.filter(compled=True).all().DoesNotExist:
-        start_full = None
-    
-    context = {
-        'gender': gender,
-        'trucks': Truck.objects.all(),
-        'user_truck': str(request.user.truck),
-        'day': datetime.datetime.now(),
-        'start': start,
-    }
-    
-    if gender == 'start':
-        
-        # Importation de la class StartDaytime pour la création de l'entrée
-        form = StartDaytime.objects.all()
-        
-        # Récupérer les infos nécésaires et les transmètres des entrées terminées
-        if start_full:
-            for last in reversed(start_full):
-                if last.name_driver == request.user.get_full_name():
-                    last_user_compled = last
-                    if last.trailer:
-                        user_trailer = change_text_to_list(last.trailer, ',', '.', False)
-                        last_trailer = user_trailer[-1].upper()
-                        context['last_trailer'] = last_trailer
-                        break
+
+def create_work(request, work_type):
+    last_start = StartDaytime.objects.filter(driver_name=request.user.get_full_name()).last()
+    if request.method == "POST":
+        # Récupération des données depuis le formulaire HTML
+        if work_type == 'start':
+            work_data = {
+                'driver_name': request.user.get_full_name(),
+                'truck': request.POST.get('truck').upper(),
+                'trailer': request.POST.get('trailer').upper(),
+                'city_start': request.POST.get('city_start').capitalize(),
+                'sector': request.POST.get('sector').capitalize(),
+                'km_start': int(request.POST.get('km_start')),
+                'date_start': convert_date(request.POST.get('date_start')),
+                'hour_start': convert_hour(request.POST.get('hour_start')),
+            }
         else:
-            context['last_trailer'] = None
-            context['last_user_compled'] = None
-        context['title'] = 'Commencer la journée'
-        context['last_user_compled'] = last_user_compled
-        
-        # Récupération des données du formulaire
-        if request.method == 'POST':
-            name_driver = request.user.get_full_name()
-            truck = request.POST.get('truck').upper()
-            sector = request.POST.get('sector')
-            trailer = request.POST.get('trailer').upper() if sector != 'Distribution' else None
-            city_start = request.POST.get('city_start').capitalize()
-            date_start = convert_date(request.POST.get('date_start'))
-            hour_start = convert_hour(request.POST.get('hour_start'))
-            km_start = int(request.POST.get('km_start'))
+            work_data = {
+                'name': request.POST.get('name'),
+                'arrival_hour': convert_hour(request.POST.get('arrival_hour')),
+                'km_arrival': int(request.POST.get('km_arrival')),
+            }
+
+        # Création du travail selon le type
+        if work_type == "factory":
             
-            # Création de l'entrée en fonction du secteur
-            try:
-                form.create(
-                    name_driver=name_driver,
-                    truck=truck,
-                    trailer=trailer,
-                    sector=sector,
-                    city_start=city_start,
-                    date_start=date_start,
-                    hour_start=hour_start,
-                    km_start=km_start
-                )
-            except Exception as e:
-                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-                context['error'] = error
+            # Trouver la dernière remorque chargée ou vide
+            load_user = StartDaytime.objects.filter(last_load=True).all() # on obtient tout les camions chargé
+            last_load_user = None
+            if load_user:
+                if last_start.sector == 'Distribution':
+                    last_load_user = load_user.get(truck=last_start.truck) # on prend celui dont le camion correspond
+                else:
+                    last_load_user = load_user.get(driver_name=request.user.get_full_name()) # on prend celui qui correspond au chauffeur
             
-            return redirect('daytime')            
-    
-    if gender == 'change':
-        
-        # Importation de la classe ChangeDaytime pour la création de l'entrée
-        form = ChangeDaytime.objects.all()
-        
-        # Récupérer les infos nécéssaires et les transmètres
-        factorys = sorted(
-            [
-                fac for fac in Factory.objects.all() if 'Parking' in change_text_to_list(fac.sector, ',', '.', False)
-            ],
-            key=lambda x: x.name
-        )
-        context['factorys'] = factorys
-        context['title'] = 'Commencer un changement'
-        
-        if request.method == 'POST':
-            
-            # Récupération des données du formulaire
-            name = request.POST.get('name')
-            hour_arrival = convert_hour(request.POST.get('hour_arrival'))
-            km_arrival = int(request.POST.get('km_arrival'))
-            
-            try:
-                
-                # Création de l'entrée
-                form.create(
-                    name=name,
-                    hour_arrival=hour_arrival,
-                    km_arrival=km_arrival,
-                )
-                
-                # Ajouter le dernier changement au travail de la journée du chauffeur
-                last = ChangeDaytime.objects.last()
-                start.add_work(last.id, last.formel)
-                
-                return redirect('daytime')
-                
-            except Exception as e:
-                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-                context['error'] = error
-    
-    if gender == 'gasoil':
-        
-        # Importation de la classe ChangeDaytime pour la création de l'entrée
-        form = GasoilDaytime.objects.all()
-        
-        # Récupérer les infos nécéssaires et les transmètres
-        factorys = sorted(
-            [
-                fac for fac in Station.objects.all()
-            ],
-            key=lambda x: x.name
-        )
-        context['factorys'] = factorys
-        context['title'] = 'Commencer le plein'
-        
-        if request.method == 'POST':
-            
-            # Récupération des données du formulaire
-            name = request.POST.get('name')
-            hour_arrival = convert_hour(request.POST.get('hour_arrival'))
-            km_arrival = int(request.POST.get('km_arrival'))
-            
-            try:
-                
-                # Création de l'entrée
-                form.create(
-                    name=name,
-                    hour_arrival=hour_arrival,
-                    km_arrival=km_arrival,
-                )
-                
-                # Ajouter le dernier changement au travail de la journée du chauffeur
-                last = GasoilDaytime.objects.last()
-                start.add_work(last.id, last.formel)
-                
-                return redirect('daytime')
-                
-            except Exception as e:
-                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-                context['error'] = error
-    
-    if gender == 'factory':
-        
-        # Importation de la classe ChangeDaytime pour la création de l'entrée
-        form = FactoryDaytime.objects.all()
-        
-        # Récupérer les infos nécéssaires et les transmètres
-        factorys = sorted(
-            [
-                fac for fac in Factory.objects.all() if str(start.sector) in change_text_to_list(fac.sector, ',', '.', False)
-            ],
-            key=lambda x: x.name
-        )
-        context['factorys'] = factorys
-        context['title'] = 'Commencer un arrêt'
-        
-        if request.method == 'POST':
-            
-            # Récupération des données du formulaire
-            name = request.POST.get('name')
-            hour_arrival = convert_hour(request.POST.get('hour_arrival'))
-            km_arrival = int(request.POST.get('km_arrival'))
-            
-            # Retrouver le dernier camion ou remorque chargée ou vide, pour avoir les kilomètres à vide ou à charge
-            last_fill = None
-            last_empty = None
-            km_fill = None
-            km_empty = None
-            
-            if start_full:
-                for full in reversed(start_full):
-                    if start.sector == 'Distribution':
-                        if full.truck == start.truck:
-                            if full.last_loading:
-                                last_fill = full
-                                break
-                            else:
-                                if full.work:
-                                    for work in full.work:
-                                        if work.get('type') == 'factory':
-                                            last_empty = full
-                                            break
-                    else:
-                        trailer_user = change_text_to_list(start.trailer, ',', '.', False)
-                        if trailer_user[-1] in change_text_to_list(full.trailer, ',', '.', False):
-                            if full.last_loading:
-                                last_fill = full
-                                break
-                            else:
-                                if full.work:
-                                    for work in full.work:
-                                        if 'change' == work.get('type') == 'factory':
-                                            last_empty = full
-                                            break
-            
-            if last_fill or last_empty:
-                if last_empty:
-                    for work in reversed(last_empty.work):
-                        if start.sector == 'Distribution':
-                            if work.get('type') == 'factory':
-                                fact = FactoryDaytime.objects.get(id=work.get('id'))
-                                km_empty = fact.km_arrival
-                                break
-                        else:
-                            if work.get('type') == 'factory':
-                                fact = FactoryDaytime.objects.get(id=work.get('id'))
-                                km_empty = fact.km_arrival
-                                break
-                            if work.get('type') == 'change':
-                                fact = ChangeDaytime.objects.get(id=work.get('id'))
-                                km_empty = fact.km_arrival
-                                break
-                if last_fill:
-                    for work in reversed(last_fill.work):
-                        if start.sector == 'Distribution':
-                            if work.get('type') == 'factory':
-                                fact = FactoryDaytime.objects.get(id=work.get('id'))
-                                km_fill = fact.km_arrival
-                                break
-                        else:
-                            if work.get('type') == 'factory':
-                                fact = FactoryDaytime.objects.get(id=work.get('id'))
-                                km_fill = fact.km_arrival
-                                break
-                            if work.get('type') == 'change':
-                                fact = ChangeDaytime.objects.get(id=work.get('id'))
-                                km_fill = fact.km_arrival
-                                break
+            # on regarde dans le travail à quel moment il a été chargé
+            km_fill = 0
+            km_empty = 0
+            if last_load_user:
+                for work in last_load_user.work:
+                    if work.get('type') == 'factory':
+                        fact = FactoryDaytime.objects.get(id=work.get('id'))
+                        if fact.weight > 0:
+                            km_fill = work_data.get('km_arrival') - fact.km_arrival
+                            break
+                        if fact.weight <= 0:
+                            km_empty = work_data.get('km_arrival') - fact.km_arrival
+                            break
+                    if work.get('type') == 'change':
+                        fact = ChangeDaytime.objects.get(id=work.get('id'))
+                        if fact.weight > 0:
+                            km_fill = work_data.get('km_arrival') - fact.km_arrival
+                            break
+                        if fact.weight <= 0:
+                            km_empty = work_data.get('km_arrival') - fact.km_arrival
+                            break
             else:
-                for work in reversed(start.work):
-                    if start.sector == 'Distribution':
-                        if work.get('type') == 'factory':
-                            fact = FactoryDaytime.objects.get(id=work.get('id'))
-                            if fact.wheight:
-                                km_fill = fact.km_arrival
-                            else:
-                                km_empty = fact.km_arrival
-                            break
-                    else:
-                        if work.get('type') == 'factory':
-                            fact = FactoryDaytime.objects.get(id=work.get('id'))
-                            if fact.wheight:
-                                km_fill = fact.km_arrival
-                            else:
-                                km_empty = fact.km_arrival
-                            break
-                        if work.get('type') == 'change':
-                            fact = ChangeDaytime.objects.get(id=work.get('id'))
-                            if fact.wheight:
-                                km_fill = fact.km_arrival
-                            else:
-                                km_empty = fact.km_arrival
-                            break
+                km_empty = work_data.get('km_arrival') - last_start.km_start
+                
+            # on ajoute dans les données les kilomètres à charge et à vide
+            work_data['km_filled'] = km_fill
+            work_data['km_emptied'] = km_empty
             
-            # Comparer les kilomètres à charge et à vide pour les enregistrer dans l'entrée de la classe
-            empty = 0
-            fill = 0
-            
-            if km_empty:
-                empty = km_arrival - km_empty
-            if km_fill:
-                fill = km_arrival - km_fill
-            
-            try:
-                
-                # Création de l'entrée
-                form.create(
-                    name=name,
-                    hour_arrival=hour_arrival,
-                    km_arrival=km_arrival,
-                    km_filled=fill,
-                    km_emptied=empty,
-                )
-                
-                # Ajouter le dernier changement au travail de la journée du chauffeur
-                last = FactoryDaytime.objects.last()
-                start.add_work(last.id, last.formel)
-                
-                return redirect('daytime')
-                
-            except Exception as e:
-                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-                context['error'] = error
+            FactoryDaytime.objects.create(**work_data)
+            work = FactoryDaytime.objects.last()
+        elif work_type == "change":
+            ChangeDaytime.objects.create(**work_data)
+            work = ChangeDaytime.objects.last()
+        elif work_type == "gasoil":
+            GasoilDaytime.objects.create(**work_data)
+            work = GasoilDaytime.objects.last()
+        elif work_type == 'start':
+            StartDaytime.objects.create(**work_data)
+
+        # Ajouter le travail dans la liste de la journée
+        if last_start:
+            if not work_type == 'start':
+                last_start.add_work(work.id, work.formal)
+        
+        return redirect('daytime')  # Redirection après la création du travail
     
+    # Récupération du dernier utilisateur terminé
+    last_user_compled = StartDaytime.objects.filter(driver_name=request.user.get_full_name(), completed=True).last()
+    trailer = None
+    last_trailer = None
+    if last_user_compled:
+        if validate_list(last_user_compled.trailer) == '+':
+            trailer = change_text_to_list(last_user_compled.trailer, ',', '.', False)
+            last_trailer = trailer[-1]
+        else:
+            last_trailer = last_user_compled.trailer[:-1].strip()
+    
+    # Dénomination des titres de page
+    if work_type == "factory":
+        title = 'Commencer un arrêt'
+        factorys = sorted(
+            [factory for factory in Factory.objects.all() if request.user.sector in change_text_to_list(factory.sector, ',', '.', False)],
+            key=lambda x: x.name,
+        )
+    elif work_type == "change":
+        title = 'Commencer un changement'
+        factorys = sorted(
+            [factory for factory in Factory.objects.all() if 'Parking' in change_text_to_list(factory.sector, ',', '.', False)],
+            key=lambda x: x.name,
+        )
+    elif work_type == "gasoil":
+        title = 'Commencer un plein'
+        factorys = sorted(
+            [station for station in Station.objects.all()],
+            key=lambda x: x.name,
+        )
+    elif work_type == 'start':
+        title = 'Commencer une journée'
+        
+    # Contexte pour le formulaire
+    context = {
+        'gender': work_type,
+        'title': title,
+        'day': datetime.datetime.now(),
+        'trucks': Truck.objects.all(),
+        'last_trailer': last_trailer,
+        'last_user_compled': last_user_compled if last_user_compled else None,
+        'factorys': factorys,
+        # Ajouter ici les données nécessaires pour pré-remplir le formulaire
+    }
     return render(request, 'daytime/create_work.html', context)
 
-def modify_work(request, gender, id):
-    
-    context = {
-        'gender': gender,
-    }
-    
-    return render(request, 'daytime/modify_work.html', context)
 
-def completed_work(request, gender, id):
-    
-    # Récupération des dernières journées completes et de la journée en court du chauffeur
-    start = StartDaytime.objects.filter(name_driver=request.user.get_full_name()).last()
-    
-    try:
-        start_full = StartDaytime.objects.filter(compled=True).all()
-    except StartDaytime.objects.filter(compled=True).all().DoesNotExist:
-        start_full = None
-        
-    # Transmètre les données de base
-    context = {
-        'day': datetime.datetime.now(),
-        'gender': gender,
-        'start': start,
-    }
-    
-    if gender == 'change':
-        
-        # Récuperation de l'entrée déjà commencée
-        change = ChangeDaytime.objects.get(id=id)
-        
-        # Importation des données et les transmètres
-        context['title'] = 'Terminer le changement'
-        context['change'] = change
-        
-        # Récupération des données du formulaire
-        if request.method == 'POST':
-            trailer = request.POST.get('trailer').upper()
-            condition = request.POST.get('condition')
-            lights = request.POST.get('lights')
-            tires = request.POST.get('tires')
-            wheight = bool(int(request.POST.get('wheight')))
-            hour_start = convert_hour(request.POST.get('hour_start'))
-            comment = request.POST.get('comment').capitalize()
-            
-            # Modification de l'entrée
-            try:
-                change.trailer = trailer
-                change.condition = condition
-                change.lights = lights
-                change.tires = tires
-                change.wheight = wheight
-                change.comment = comment
-                change.hour_start = hour_start
-                change.compled = True
-                change.save()
-                
-                # Ajouter la nouvelle remorque dans la liste des de remorques de la journée
-                start.add_trailer(trailer)
-                
-                # Ajouter que la journée à un chargement
-                start.last_load(wheight)
-                
-                return redirect('daytime')
-            except Exception as e:
-                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-                context['error'] = error
-    
-    if gender == 'gasoil':
-        
-        # Récuperation de l'entrée déjà commencée
-        gasoil = GasoilDaytime.objects.get(id=id)
-        
-        # Importation des données et les transmètres
-        context['title'] = 'Terminer le plein'
-        context['gasoil'] = gasoil
-        
-        # Récupération des données du formulaire
-        if request.method == 'POST':
-            diesel = int(request.POST.get('diesel'))
-            adblue = int(request.POST.get('adblue'))
-            hour_start = convert_hour(request.POST.get('hour_start'))
-            
-            # Modification de l'entrée
-            try:
-                gasoil.diesel = diesel
-                gasoil.adblue = adblue
-                gasoil.hour_start = hour_start
-                gasoil.compled = True
-                gasoil.save()
-                
-                return redirect('daytime')
-            except Exception as e:
-                error = GoogleTranslator(source='auto', target='fr').translate(str(e))
-                context['error'] = error
-    
-    return render(request, 'daytime/completed_work.html', context)
+def modify_work():
+    pass
+
+def completed_work():
+    pass

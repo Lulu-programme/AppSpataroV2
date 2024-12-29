@@ -18,7 +18,7 @@
 </div>
 {% if start %}
 <div class='start-day'>
-    {% if start.trailer %}<h2>{{ start.name_driver }} - {{ start.sector }}</h2>{% else %}<h2>{{ start.name_driver }}</h2>{% endif %}
+    {% if start.trailer %}<h2>{{ start.driver_name }} - {{ start.sector }}</h2>{% else %}<h2>{{ start.driver_name }}</h2>{% endif %}
     <div class="info">
         <p>Tracteur : {{ start.truck }}</p>
         {% if start.trailer %}<p>Remorque : {{ start.trailer }}</p>{% else %}<p>Secteur : {{ start.sector }}{% endif %}
@@ -27,6 +27,7 @@
         <p>Heure de départ : {{ start.hour_start|time:'H\hi' }}</p>
         <p>Kilomètre de départ : {{ start.km_start }} KM</p>
     </div>
+    {% if work_end %}
     {% if not start.compled %}
     <div class="links">
         <p><a href="{% url "completed-work" 'start' start.id %}">
@@ -45,13 +46,14 @@
         {% if dislodge %}<p>Délogement</p>{% else %}<p>À la maison</p>{% endif %}
     </div>
     {% endif %}
+    {% endif %}
 </div>
 {% for halt in halts %}
-{% if halt.formel == 'factory' %}
+{% if halt.formal == 'factory' %}
 <div class='factory-day'>
     <h1>{{ halt.name }}</h1>
     <div class='info'>
-        {% if halt.hour_arrival %}<p>Heure d'arrivé : {{ halt.hour_arrival|time:'H\hi' }}</p>{% endif %}
+        {% if halt.arrival_hour %}<p>Heure d'arrivé : {{ halt.arrival_hour|time:'H\hi' }}</p>{% endif %}
         {% if halt.start_work %}<p>Début du travail : {{ halt.start_work|time:'H\hi' }}</p>{% endif %}
         {% if halt.cmr %}<p>CMR : {{ halt.cmr }}</p>{% endif %}
         {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
@@ -74,18 +76,18 @@
     {% if halt.comment %}<h3>Commentaire : {{ halt.comment }}</h3>{% endif %}
     {% if not halt.compled %}
     <div class="links">
-        <p class="modify"><a href="{% url "modify-work" 'factory' halt.id %}">
+        <p class="modify"><a href="{% url "modify-work" halt.id %}">
             <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
         <p><a href="{% url "completed-work" 'factory' halt.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
     </div>{% endif %}
 </div>
 {% endif %}
-{% if halt.formel == 'change' %}
+{% if halt.formal == 'change' %}
 <div class='change-day'>
     <h1>{{ halt.name }}</h1>
     <div class='info'>
-        {% if halt.hour_arrival %}<p>Heure d'arrivé : {{ halt.hour_arrival|time:'H\hi' }}</p>{% endif %}
+        {% if halt.arrival_hour %}<p>Heure d'arrivé : {{ halt.arrival_hour|time:'H\hi' }}</p>{% endif %}
         {% if halt.trailer %}<p>Immatriculation : {{ halt.trailer }}</p>{% endif %}
         {% if halt.lights %}<p>Éclairages : {{ halt.lights }}</p>{% endif %}
         {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
@@ -103,11 +105,11 @@
     </div>{% endif %}
 </div>
 {% endif %}
-{% if halt.formel == 'gasoil' %}
+{% if halt.formal == 'gasoil' %}
 <div class='gasoil-day'>
     <h1>{{ halt.name }}</h1>
     <div class='info'>
-        {% if halt.hour_arrival %}<p>Heure d'arrivé : {{ halt.hour_arrival|time:'H\hi' }}</p>{% endif %}
+        {% if halt.arrival_hour %}<p>Heure d'arrivé : {{ halt.arrival_hour|time:'H\hi' }}</p>{% endif %}
         {% if halt.diesel %}<p>Diesel : {{ halt.diesel }} L</p>{% endif %}
         {% if halt.hour_start %}<p>Heure de départ : {{ halt.hour_start|time:'H\hi' }}</p>{% endif %}
         {% if halt.adblue %}<p>AdBlue : {{ halt.adblue }} L</p>{% endif %}
