@@ -13,13 +13,13 @@
 <form action="{% url 'completed-work' 'start' start.id %}" method="POST">
     {% csrf_token %}
     <fieldset>
-        <legend>Date de fin</legend>
-        <input type='date' name='date_end' id='date_end' value="{{ day|date:'Y-m-d' }}" required>
+        <legend>Lieux de fin</legend>
+        <input type='text' name='city_end' id='city_end' required>
         <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
-        <legend>Lieux de fin</legend>
-        <input type='text' name='city_end' id='city_end' required>
+        <legend>Date de fin</legend>
+        <input type='date' name='date_end' id='date_end' value="{{ day|date:'Y-m-d' }}" required>
         <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <fieldset>
@@ -89,15 +89,25 @@
     </fieldset>
     <fieldset>
         <legend>Chargée</legend>
-        <div>
-            <input type="radio" id="wheight" name="wheight" value="1" required/>
-            <label for="wheight">Oui</label>
-        </div>
-        <div>
-            <input type="radio" id="wheight" name="wheight" value="0" required/>
-            <label for="wheight">Non</label>
-        </div>
+        <input type='numbers' name='weight' id='weight' value='0' required>
         <p class='required'>OBLIGATOIRE</p>
+    </fieldset>
+    <fieldset>
+        <legend>CMR</legend>
+        <textarea name='cmr' id='cmr' rows='10' cols='30'></textarea>
+    </fieldset>
+    <fieldset>
+        <legend>Référence</legend>
+        <textarea name='command' id='command' rows='10' cols='30'></textarea>
+    </fieldset>
+    <fieldset>
+        <legend>Produits</legend>
+        {% for product in products %}
+        <div>
+            <input type="checkbox" id="product" name="product" value="{{ product.id }}" {% if product.id in list_product %}checked{% endif %} />
+            <label for="product">{{ product.name }}-{{ product.nsa }}</label>
+        </div>
+        {% endfor %}
     </fieldset>
     <fieldset>
         <legend>Heure de départ</legend>
@@ -109,7 +119,7 @@
     </fieldset>
     <p class="submitted"><input type="submit" value="Terminer"></p>
 </form>{% endif %}
-<!--   Change daytime   -->
+<!--   gasoil daytime   -->
 {% if gender == 'gasoil' %}
 <form action="{% url 'completed-work' 'gasoil' gasoil.id %}" method="POST">
     {% csrf_token %}

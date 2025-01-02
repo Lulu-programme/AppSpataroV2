@@ -51,8 +51,8 @@ urlpatterns = [
     # daytime page
     path('daytime/', daytime.views.daytime, name='daytime'),
     path('create-work/<str:work_type>/', daytime.views.create_work, name='create-work'),
-    path('modify-work/<int:id>/', daytime.views.modify_work, name='modify-work'),
-    path('completed-work/<str:work_type>/<int:id>/', daytime.views.completed_work, name='completed-work'),
+    path('modify-work/<int:work_id>/', daytime.views.modify_work, name='modify-work'),
+    path('completed-work/<str:work_type>/<int:work_id>/', daytime.views.completed_work, name='completed-work'),
 ] 
 
 if settings.DEBUG:

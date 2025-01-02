@@ -21,7 +21,7 @@ class StartDaytime(models.Model):
     formal = models.CharField(default='start', max_length=50)
 
     def __str__(self):
-        return f'{self.driver_name}'
+        return f'{self.driver_name} - {self.truck} - {self.date_start}'
 
     def total_km(self):
         return self.km_end - self.km_start
@@ -119,6 +119,13 @@ class ChangeDaytime(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def add_product(self, product_id, product_type):
+        """
+        Ajoute un produit dans le champ JSONField `product`.
+        """
+        self.product.append({"id": product_id, "name": product_type})
+        self.save()
 
 
 class GasoilDaytime(models.Model):

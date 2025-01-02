@@ -4,7 +4,7 @@
 <div class="nav-content">
     <h1>{{ title }}</h1>
     <div class="btn-add">
-        {% if start.compled or not start%}
+        {% if start.completed or not start%}
         <a href="{% url "create-work" 'start' %}"><img src="{% static 'images/icons/add_day.png' %}" class="icon tablet-phone">
             <span class="laptop">Commencer la journée</span></a>{% else %}
         {% if work_end %}<a href="{% url "create-work" 'factory' %}"><img src="{% static 'images/icons/add_halt.png' %}" class="icon tablet-phone">
@@ -28,7 +28,7 @@
         <p>Kilomètre de départ : {{ start.km_start }} KM</p>
     </div>
     {% if work_end %}
-    {% if not start.compled %}
+    {% if not start.completed %}
     <div class="links">
         <p><a href="{% url "completed-work" 'start' start.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
@@ -66,15 +66,15 @@
         {% endfor %}
         </p>
         {% endif %}
-        {% if halt.wheight %}<p>Poids chargé : {{ halt.wheight }} Kg</p>{% endif %}
-        {% if not halt.wheight and halt.km_filled %}<p>Déchargement</p>{% endif %}
+        {% if halt.weight %}<p>Poids chargé : {{ halt.weight }} Kg</p>{% endif %}
+        {% if not halt.weight and halt.km_filled %}<p>Déchargement</p>{% endif %}
         {% if halt.km_arrival %}<p>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</p>{% endif %}
     </div>
     {% if halt.km_filled %}<h3>Kilomètre à charge : {{ halt.km_filled }} Km</h3>{% endif %}
     {% if halt.km_emptied %}<h3>Kilomètre à vide : {{ halt.km_emptied }} Km</h3>{% endif %}
-    {% if halt.compled %}<h3>Temps d'attente : {{ halt.total_wait }}</h3>{% endif %}
+    {% if halt.completed %}<h3>Temps d'attente : {{ halt.total_wait }}</h3>{% endif %}
     {% if halt.comment %}<h3>Commentaire : {{ halt.comment }}</h3>{% endif %}
-    {% if not halt.compled %}
+    {% if not halt.completed %}
     <div class="links">
         <p class="modify"><a href="{% url "modify-work" halt.id %}">
             <img src="{% static 'images/icons/modify.png' %}" class="icon"></a></p>
@@ -96,9 +96,9 @@
 
     </div>
     {% if halt.km_arrival %}<h3>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</h3>{% endif %}
-    {% if halt.compled %}{% if halt.wheight %}<h3>Remorque chargée</h3>{% else %}<h3>Remorque vide</h3>{% endif %}{% endif %}
+    {% if halt.completed %}{% if halt.weight > 0 %}<h3>Remorque chargée</h3>{% else %}<h3>Remorque vide</h3>{% endif %}{% endif %}
     {% if halt.comment %}<h3>Commentaire : <br/>{{ halt.comment }}</h3>{% endif %}
-    {% if not halt.compled %}
+    {% if not halt.completed %}
     <div class="links">
         <p><a href="{% url "completed-work" 'change' halt.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
@@ -116,7 +116,7 @@
 
     </div>
     {% if halt.km_arrival %}<h3>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</h3>{% endif %}
-    {% if not halt.compled %}
+    {% if not halt.completed %}
     <div class="links">
         <p><a href="{% url "completed-work" 'gasoil' halt.id %}">
             <img src="{% static 'images/icons/completed.png' %}" class="icon"></a></p>
@@ -125,5 +125,4 @@
 {% endif %}
 {% endfor %}
 {% endif %}
-<script src="{% static 'js/script.js' %}"></script>
 {% endblock %}

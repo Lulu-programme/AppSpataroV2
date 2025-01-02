@@ -12,7 +12,7 @@
     {% csrf_token %}
     <fieldset>
         <legend>Début du travail</legend>
-        <input type='time' name='start_work' id='start_work' value="{% if object.start_work %}{{ object.start_work|time:'H:i' }}{% endif %}">
+        <input type='time' name='work_start' id='work_start' value="{% if object.work_start %}{{ object.work_start|time:'H:i' }}{% endif %}">
     </fieldset>
     <fieldset>
         <legend>Numéro de cmr</legend>

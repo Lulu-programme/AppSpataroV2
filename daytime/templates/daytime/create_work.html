@@ -65,66 +65,16 @@
         <p class='required'>OBLIGATOIRE</p>
     </fieldset>
     <p class="submitted"><input type="submit" value="Commencer"></p>
-</form>{% endif %}
+</form>
 <!--   Change daytime   -->
-{% if gender == 'change' %}
-<form action="{% url 'create-work' 'change' %}" method="POST">
+{% else %}
+<form action="{% url 'create-work' gender %}" method="POST">
     {% csrf_token %}
     <fieldset>
         <legend>Nom du client</legend>
         {% for factory in factorys %}
         <div>
             <input type="radio" id="name" name="name" value="{{ factory.get_title }}" required/>
-            <label for="name">{{ factory.get_title }}</label>
-        </div>
-        {% endfor %}
-        <p class='required'>OBLIGATOIRE</p>
-    </fieldset>
-    <fieldset>
-        <legend>Heure d'arrivée</legend>
-        <input type='time' name='arrival_hour' id='arrival_hour' value="{{ day|time:'H:i' }}">
-    </fieldset>
-    <fieldset>
-        <legend>Kilomètre d'arrivée</legend>
-        <input type='number' name='km_arrival' id='km_arrival' required>
-        <p class='required'>OBLIGATOIRE</p>
-    </fieldset>
-    <p class="submitted"><input type="submit" value="Commencer"></p>
-</form>{% endif %}
-<!--   Gasoil daytime   -->
-{% if gender == 'gasoil' %}
-<form action="{% url 'create-work' 'gasoil' %}" method="POST">
-    {% csrf_token %}
-    <fieldset>
-        <legend>Nom du client</legend>
-        {% for factory in factorys %}
-        <div>
-            <input type="radio" id="name" name="name" value="{{ factory.get_title }}" required/>
-            <label for="name">{{ factory.get_title }}</label>
-        </div>
-        {% endfor %}
-        <p class='required'>OBLIGATOIRE</p>
-    </fieldset>
-    <fieldset>
-        <legend>Heure d'arrivée</legend>
-        <input type='time' name='arrival_hour' id='arrival_hour' value="{{ day|time:'H:i' }}">
-    </fieldset>
-    <fieldset>
-        <legend>Kilomètre d'arrivée</legend>
-        <input type='number' name='km_arrival' id='km_arrival' required>
-        <p class='required'>OBLIGATOIRE</p>
-    </fieldset>
-    <p class="submitted"><input type="submit" value="Commencer"></p>
-</form>{% endif %}
-<!--   Factory daytime   -->
-{% if gender == 'factory' %}
-<form action="{% url 'create-work' 'factory' %}" method="POST">
-    {% csrf_token %}
-    <fieldset>
-        <legend>Nom du client</legend>
-        {% for factory in factorys %}
-        <div>
-            <input type="radio" id="name" name="name" value="{{ factory.get_title }}" />
             <label for="name">{{ factory.get_title }}</label>
         </div>
         {% endfor %}

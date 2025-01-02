@@ -88,14 +88,14 @@ months_entries = [
 
 
 def convert_seconds(seconds, string):
-    """Convertiseur de seconde en minutes
+    """Convertisseur de seconde en minutes
 
     Args:
         seconds (int): Les secondes totalisés
         string (bool): Pour avoir le résultat au format str ou tuple int
 
     Returns:
-        str: On reçois directement l'heure au format de chaine de caratère
+        str: On reçois directement l'heure au format de chaîne de caractère
         tuple: On reçois les heures en int et les minutes en int
     """
     hours = seconds // 3600
@@ -188,7 +188,7 @@ def validate_list(input_string):
     
     # Vérification du format
     if not input_string.endswith('.'):
-        return "La chaîne doit se terminer par un point (.)."
+        return "."
     
     # Supprimer le point pour la vérification des éléments
     content = input_string[:-1].strip()

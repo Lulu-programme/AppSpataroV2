@@ -83,7 +83,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'spataro',               # Remplace par le nom de ta base de données
-        'USER': 'postgres',                 # Remplace par ton utilisateur PostgreSQL
+        'USER': 'postgres',              # Remplace par ton utilisateur PostgreSQL
         'PASSWORD': 'Civodul1986',       # Remplace par le mot de passe de ton utilisateur
         'HOST': 'localhost',             # Adresse de la base (par ex. localhost ou une IP)
         'PORT': '5432',                  # Port par défaut de PostgreSQL
