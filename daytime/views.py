@@ -47,6 +47,7 @@ def daytime(request):
 
 def create_work(request, work_type):
     last_start = StartDaytime.objects.filter(driver_name=request.user.get_full_name()).last()
+    last_user_completed = StartDaytime.objects.filter(driver_name=request.user.get_full_name(), completed=True).last()
     if request.method == "POST":
         # Récupération des données depuis le formulaire HTML
         if work_type == 'start':
@@ -71,48 +72,39 @@ def create_work(request, work_type):
         if work_type == "factory":
             
             # Trouver la dernière remorque chargée ou vide
-            load_user = StartDaytime.objects.filter(last_load=True).all() # on obtient touts les camions chargé
-            unload_user = StartDaytime.objects.filter(last_load=False).all() # on obtient touts les camions déchargé
+            load_user = StartDaytime.objects.filter(last_load=True, truck=last_start.truck).all() # on obtient touts les camions chargé
+            unload_user = StartDaytime.objects.filter(last_load=False, truck=last_start.truck).all() # on obtient touts les camions déchargé
             last_user = None
+            print(f'Chargé : {load_user}, Déchargé : {unload_user}')
             if load_user: # On recherche dans les chargés
-                if last_start.sector == 'Distribution':
-                    last_user = load_user.filter(truck=last_start.truck).last() # on prend celui dont le camion correspond
-                else:
-                    last_user = load_user.filter(driver_name=request.user.get_full_name()).last() # on prend celui qui correspond au chauffeur
+                last_user = load_user.last() # on prend celui qui correspond au chauffeur
             elif unload_user: # On recherche dans les vides
-                if last_start.sector == 'Distribution':
-                    unload = unload_user.filter(truck=last_start.truck).all()
-                else:
-                    unload = unload_user.filter(driver_name=request.user.get_full_name()).all()
-                for last in reversed(unload):
-                    if last.work:
-                        for work in reversed(last.work):
-                            if 'change' == work.get('type') or 'factory' == work.get('type'):
-                                last_user = StartDaytime.objects.get(id=last.id)
-                                break
+                last_user = unload_user.last()
             
             # on regarde dans le travail à quel moment il a été chargé ou déchargé
+            print(f'Utilisateur : {last_user}, Travail : {last_user.work}')
             km_fill = 0
             km_empty = 0
             if last_user:
                 for work in reversed(last_user.work):
                     if work.get('type') == 'factory':
                         fact = FactoryDaytime.objects.get(id=work.get('id'))
-                        if fact.weight > 0:
+                        if fact.weight > 0 and last_user.last_load:
                             km_fill = work_data.get('km_arrival') - fact.km_arrival
                             break
-                        if fact.weight <= 0:
+                        if fact.weight <= 0 and not last_user.last_load:
                             km_empty = work_data.get('km_arrival') - fact.km_arrival
                             break
                     if work.get('type') == 'change':
                         fact = ChangeDaytime.objects.get(id=work.get('id'))
-                        if fact.weight > 0:
+                        if fact.weight > 0 and last_user.last_load:
                             km_fill = work_data.get('km_arrival') - fact.km_arrival
                             break
-                        if fact.weight <= 0:
+                        if fact.weight <= 0 and not last_user.last_load:
                             km_empty = work_data.get('km_arrival') - fact.km_arrival
                             break
-            else:
+            
+            if not km_empty and not km_fill:
                 km_empty = work_data.get('km_arrival') - last_start.km_start
                 
             # on ajoute dans les données les kilomètres à charge et à vide
@@ -138,15 +130,15 @@ def create_work(request, work_type):
         return redirect('daytime')  # Redirection après la création du travail
     
     # Récupération du dernier utilisateur terminé
-    last_user_completed = StartDaytime.objects.filter(driver_name=request.user.get_full_name(), completed=True).last()
     trailer = None
     last_trailer = None
     if last_user_completed:
-        if ',' in last_user_completed.trailer:
-            trailer = change_text_to_list(last_user_completed.trailer, ',', '.', False)
-            last_trailer = trailer[-1].upper()
-        else:
-            last_trailer = last_user_completed.trailer[:-1].strip()
+        if last_user_completed.sector != 'Distribution':
+            if ',' in last_user_completed.trailer:
+                trailer = change_text_to_list(last_user_completed.trailer, ',', '.', False)
+                last_trailer = trailer[-1].upper()
+            else:
+                last_trailer = last_user_completed.trailer[:-1].strip()
     
     # Dénomination des titres de page
     factorys = None
@@ -238,6 +230,9 @@ def modify_work(request, work_id):
                         load_command = factory.command
                         load_product = [prod['id'] for prod in factory.product]
                         break
+    
+    if get_factory.product:
+        load_product = [prod['id'] for prod in get_factory.product]
                     
     context = {
         'object': get_factory,
@@ -253,13 +248,22 @@ def modify_work(request, work_id):
     if request.method == 'POST':
         # Récupération des données
         work_start = convert_hour(request.POST.get('work_start')) if request.POST.get('work_start') else None
-        cmr = request.POST.get('cmr', None)
-        command = request.POST.get('command', None)
+        if load_cmr_list:
+            cmr = request.POST.getlist('cmr', None)
+            command = request.POST.getlist('command', None)
+        else:
+            cmr = request.POST.get('cmr', None)
+            command = request.POST.get('command', None)
         product = request.POST.getlist('product') if request.POST.get('product') else None
 
         # Validation des champs
-        error_cmr = '1' != validate_list(cmr) != '+' if cmr else False
-        error_command = '1' != validate_list(command) != '+' if command else False
+        if not load_cmr_list:
+            error_cmr = '1' != validate_list(cmr) != '+' if cmr else False
+            error_command = '1' != validate_list(command) != '+' if command else False
+        else:
+            error_cmr, error_command = False, False
+            cmr = f"{', '.join(c[:-1] for c in cmr)}."
+            command = f"{', '.join(c[:-1] for c in command)}."
 
         if not error_cmr and not error_command:
             # Mise à jour des données
@@ -282,6 +286,8 @@ def modify_work(request, work_id):
                          f"Référence : {'il manque un point à la fin' if error_command else 'OK'}",
                 'cmr': cmr,
                 'command': command,
+                'work_start': work_start,
+                'list_product': [int(prod) for prod in product],
             })
             
     return render(request, 'daytime/modify_work.html', context)
@@ -427,7 +433,7 @@ def completed_work(request, work_type, work_id):
         load_command = None
         load_cmr_list = None
         load_command_list = None
-        load_product = [prod['id'] for prod in get_factory.product]
+        load_product = None
         nb_unload = 0
         if last_load_user:
             for work in reversed(last_load_user.work):
@@ -467,6 +473,9 @@ def completed_work(request, work_type, work_id):
                         if factory.weight <= 0:
                             nb_unload += 1
                 
+    
+        if get_factory.product:
+            load_product = [prod['id'] for prod in get_factory.product]
                         
         context.update({
             'factory': get_factory,

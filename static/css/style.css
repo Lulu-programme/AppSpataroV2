@@ -9,6 +9,7 @@
 /* ---   Main settings   --- */
 *{ margin: 0; padding: 0; box-sizing: content-box; font-size: 14pt; font-family: 'text'; font-weight: normal; color: var(--text); }
 a{ text-decoration: none; font-family: 'hack'; }
+a.mail{ color: var(--primary); }
 h1{ text-align: center; font-size: 20pt; color: var(--primary); background-color: var(--secondary); padding: 10px 30px; margin: 10px auto; border-radius: 10px; width: fit-content; }
 h2{ text-align: center; font-size: 18pt; margin: 10px; border-radius: 10px; }
 h3{ text-align: center; font-size: 16pt; margin: 10px; }

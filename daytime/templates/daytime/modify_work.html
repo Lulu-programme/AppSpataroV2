@@ -12,14 +12,16 @@
     {% csrf_token %}
     <fieldset>
         <legend>Début du travail</legend>
-        <input type='time' name='work_start' id='work_start' value="{% if object.work_start %}{{ object.work_start|time:'H:i' }}{% endif %}">
+        {% if object.work_start %}<input type='time' name='work_start' id='work_start' value="{{ object.work_start|time:'H:i' }}">
+        {% elif work_start %}<input type='time' name='work_start' id='work_start' value="{{ work_start|time:'H:i' }}">
+        {% else %}<input type='time' name='work_start' id='work_start' value="">{% endif %}
     </fieldset>
     <fieldset>
         <legend>Numéro de cmr</legend>
         {% if last_list_cmr %}
         {% for cmr in last_list_cmr %}
         <div>
-            <input type="checkbox" id="cmr" name="cmr" value="{{ cmr }}." />
+            <input type="checkbox" id="cmr" name="cmr" value="{{ cmr }}." {% if cmr in object.cmr %}checked{% endif %} />
             <label for="cmr">{{ cmr }}.</label>
         </div>
         {% endfor %}
@@ -39,7 +41,7 @@
         {% if last_list_command %}
         {% for command in last_list_command %}
         <div>
-            <input type="checkbox" id="command" name="command" value="{{ command }}." />
+            <input type="checkbox" id="command" name="command" value="{{ command }}." {% if command in object.command %}checked{% endif %} />
             <label for="command">{{ command }}.</label>
         </div>
         {% endfor %}

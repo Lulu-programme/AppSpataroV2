@@ -66,8 +66,8 @@
         {% endfor %}
         </p>
         {% endif %}
-        {% if halt.weight %}<p>Poids chargé : {{ halt.weight }} Kg</p>{% endif %}
-        {% if not halt.weight and halt.km_filled %}<p>Déchargement</p>{% endif %}
+        {% if halt.weight > 0 %}<p>Poids chargé : {{ halt.weight }} Kg</p>{% endif %}
+        {% if halt.weight <= 0 and halt.km_filled %}<p>Déchargement</p>{% endif %}
         {% if halt.km_arrival %}<p>Kilomètre d'arrivée : {{ halt.km_arrival }} Km</p>{% endif %}
     </div>
     {% if halt.km_filled %}<h3>Kilomètre à charge : {{ halt.km_filled }} Km</h3>{% endif %}

@@ -29,19 +29,21 @@
             </div>
             <div class="card-info">
                 {% if not driver.is_staff %}
+                {% if driver.drive_license %}
                 <p>
                     Permis de conduire : {{ driver.drive_license}}
-                </p>
+                </p>{% endif %}
+                {% if driver.adr_license %}
                 <p>
                     Permis ADR : {{ driver.adr_license}}
-                </p>
+                </p>{% endif %}
+                {% if driver.card_drive %}
                 <p>
                     Carte tachygraphe : {{ driver.card_drive}}
-                </p>
-                {% endif %}
-                <p>Téléphone : {{ driver.phone }}</p>
-                <p>Email : <a href="mailto:{{ driver.email }}">{{ driver.email }}</a></p>
-                <p>Ville : {{ driver.city }}</p>
+                </p>{% endif %}{% endif %}
+                {% if driver.phone %}<p>Téléphone : {{ driver.phone }}</p>{% endif %}
+                {% if driver.email %}<p>Email : <a class='mail' href="mailto:{{ driver.email }}">{{ driver.email }}</a></p>{% endif %}
+                {% if driver.city %}<p>Ville : {{ driver.city }}</p>{% endif %}
             </div>
             <div class="card-links">
                 {% if driver.delete %}
