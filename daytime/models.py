@@ -31,8 +31,8 @@ class StartDaytime(models.Model):
             return f'{self.hour_start.hour:02}h{self.hour_start.minute:02}'
         return f'{self.hour_end.hour:02}h{self.hour_end.minute:02}'
 
-    def total_hours(self):
-        return calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, True)
+    def total_hours(self, string):
+        return calculate_laps_time(self.hour_start.hour, self.hour_end.hour, self.hour_start.minute, self.hour_end.minute, string)
     
     def add_work(self, work_id, work_type):
         """
@@ -81,19 +81,19 @@ class FactoryDaytime(models.Model):
     def __str__(self):
         return self.name
 
-    def total_work(self):
-        return calculate_laps_time(self.work_start.hour, self.end_work.hour, self.work_start.minute, self.end_work.minute, True)
+    def total_work(self, string):
+        return calculate_laps_time(self.work_start.hour, self.end_work.hour, self.work_start.minute, self.end_work.minute, string)
     
-    def total_wait(self):
+    def total_wait(self, string):
         to_place = calculate_laps_time(self.arrival_hour.hour, self.hour_start.hour, self.arrival_hour.minute, self.hour_start.minute, False)
         to_work = calculate_laps_time(self.work_start.hour, self.end_work.hour, self.work_start.minute, self.end_work.minute, False)
-        return convert_seconds(to_place - to_work, True)
+        return convert_seconds(to_place - to_work, string)
     
-    def add_product(self, product_id, product_type):
+    def add_product(self, product_id, product_type, product_class):
         """
         Ajoute un produit dans le champ JSONField `product`.
         """
-        self.product.append({"id": product_id, "name": product_type})
+        self.product.append({"id": product_id, "name": product_type, "classification": product_class})
         self.save()
     
     def get_product(self):
@@ -120,11 +120,11 @@ class ChangeDaytime(models.Model):
     def __str__(self):
         return self.name
     
-    def add_product(self, product_id, product_type):
+    def add_product(self, product_id, product_type, product_class):
         """
         Ajoute un produit dans le champ JSONField `product`.
         """
-        self.product.append({"id": product_id, "name": product_type})
+        self.product.append({"id": product_id, "name": product_type, "classification": product_class})
         self.save()
 
 

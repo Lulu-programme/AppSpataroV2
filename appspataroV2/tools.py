@@ -208,3 +208,9 @@ def convert_date(date):
 
 def convert_hour(hour):
     return datetime.datetime.strptime(hour, '%H:%M') if hour else None
+
+
+def change_weight(weight):
+    if weight < 0:
+        return int(str(weight[1:]))
+    return weight

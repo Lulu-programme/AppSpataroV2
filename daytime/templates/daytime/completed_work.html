@@ -193,10 +193,14 @@
     </fieldset>
     <fieldset>
         <legend>Produits</legend>
+        <div>
+            <input type="checkbox" id="product" name="product" value="no" {% if not list_product %}checked{% endif %} />
+            <label for="product">Pas adr</label>
+        </div>
         {% for product in products %}
         <div>
             <input type="checkbox" id="product" name="product" value="{{ product.id }}" {% if product.id in list_product %}checked{% endif %} />
-            <label for="product">{{ product.name }}-{{ product.nsa }}</label>
+            <label for="product">{{ product.get_name }}</label>
         </div>
         {% endfor %}
     </fieldset>
